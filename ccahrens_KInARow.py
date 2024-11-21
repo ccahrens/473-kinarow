@@ -16,7 +16,7 @@ TO PROVIDE A GOOD STRUCTURE FOR YOUR IMPLEMENTATION.
 from agent_base import KAgent
 from game_types import State, Game_Type
 import game_types
-import winTesterForK
+from winTesterForK import winTesterForK
 
 AUTHORS = 'CC Ahrens and Cin Ahrens' 
 
@@ -82,11 +82,12 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
         print("makeMove has been called")
 
         print("code to compute a good move should go here.")
-        possibleMoves = successors_and_moves(currentState)
-        print(currentState.whose_move)
-        myMove = self.chooseMove(possibleMoves, currentState.whose_move, timeLimit)
+        value, newMove, newState = self.minimax(currentState, timeLimit)
+        # possibleMoves = successors_and_moves(currentState)
+        # print(currentState.whose_move)
+        # myMove = self.chooseMove(possibleMoves, currentState.whose_move, timeLimit)
         myUtterance = self.nextUtterance()
-        newState, newMove = myMove
+        #newState, newMove = myMove
         return [[newMove, newState], myUtterance]
         # # Here's a placeholder:
         # a_default_move = [0, 0] # This might be legal ONCE in a game,
@@ -116,28 +117,38 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
 
         #default_score = 0 # Value of the passed-in state. Needs to be computed.
         next_moves = successors_and_moves(state)
+        #print(next_moves)
 
         if (state.whose_move == 'X'):
             v = -float("inf")
             move = None
-            for successor, action in next_moves:
+            state = None
+            len = next_moves[0].__len__()
+            for i in range(len):
+                successor = next_moves[0][i]
+                action = next_moves[1][i]
                 new_val = self.min_value(successor, 1, depthRemaining)
                 if(new_val > v):
                     v = new_val
                     move = action
+                    state = successor
             
-            return [v, move]
+            return [v, move, state]
         else:
             v = float("inf")
             move = None
-
-            for successor, action in next_moves:
+            state = None
+            len = next_moves[0].__len__()
+            for i in range(len):
+                successor = next_moves[0][i]
+                action = next_moves[1][i]
                 new_val = self.max_value(successor, 0, depthRemaining)
                 if(new_val < v):
                     v = new_val
                     move = action
+                    state = successor
             
-            return [v, move]
+            return [v, move, state]
         # Only the score is required here but other stuff can be returned
         # in the list, after the score, in case you want to pass info
         # back from recursive calls that might be used in your utterances,
@@ -153,7 +164,10 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
 
         next_ind = index ^ 1
         
-        for successor, action in next_moves:
+        len = next_moves[0].__len__()
+        for i in range(len):
+            successor = next_moves[0][i]
+            action = next_moves[1][i]
             if(depthRemaining == 0 or winTesterForK(gameState, action, GAME_TYPE.k) != 'No Win'):
                     return self.staticEval(gameState)
             if(next_ind == 0):
@@ -171,7 +185,10 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
 
         next_ind = index ^ 1
         
-        for successor, action in next_moves:
+        len = next_moves[0].__len__()
+        for i in range(len):
+            successor = next_moves[0][i]
+            action = next_moves[1][i]
             if(depthRemaining == 0 or winTesterForK(gameState, action, GAME_TYPE.k) != 'No Win'):
                     return self.staticEval(gameState)
             if(next_ind == 0):
