@@ -100,6 +100,8 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
         # print("Returning from makeMove")
         # return [[a_default_move, newState], newRemark]
 
+    # TODO: @cinahrens
+    # 0's are mins, X's are maxes!
     # The main adversarial search function:
     def minimax(self,
             state,
@@ -118,12 +120,20 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
         # back from recursive calls that might be used in your utterances,
         # etc. 
  
+
+    # TODO: @ccahrens
+    # some things are better for different shapes,
+    # figure out how to tell what shape you're playing
     def staticEval(self, state):
         print('calling staticEval. Its value needs to be computed!')
         # Values should be higher when the states are better for X,
         # lower when better for O.
         return 0
     
+    # TODO: @ccahrens
+    # make this smarter based on who's winning
+    # if self.twin = wordy
+    # if !self.twin = wucky
     def nextUtterance(self):
         if (self.twin):
             if self.repeat_count > 1: return "I am randomed out now."
@@ -186,6 +196,11 @@ def do_move(state, i, j, o):
             news.whose_move = o
             return news
     
+
+# TODO: @ccahrens
+# Write better commentary for each
+# list of lists
+# formalize which indices are for what type of commentary
 DUCKY_BANK = ["How's that for random?",
                   "Flip!",
                   "Spin!",
