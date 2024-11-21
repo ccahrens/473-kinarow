@@ -201,10 +201,38 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
     # some things are better for different shapes,
     # figure out how to tell what shape you're playing
     def staticEval(self, state):
-        print('calling staticEval. Its value needs to be computed!')
+        print('calling staticEval')
         # Values should be higher when the states are better for X,
         # lower when better for O.
+
+        nRows: int = len(state.board)
+        mCols: int = len(state.board[0])
+        return self.staticEvalHelper(state, "X", nRows, mCols) + self.staticEvalHelper(state, "O", nRows, mCols)
         return 0
+
+
+    # dumb helper that for now just counts number of positions for each
+    def staticEvalHelper(self, state, agent, nRows, mCols):
+        sum: int = 0
+        #unblockedRow: bool = True
+        for i in range (0, nRows):
+            # get next row
+            row = state.board[i]
+            for j in range (0, mCols):
+                if row[j] == agent:
+                    sum += 1
+                else:
+                    sum -= j
+
+        for j in range (0, mCols):
+            for i in range (0, nRows):
+                if state.board[i][j] == agent:
+                    sum += 1
+                else:
+                    sum -= i
+        if (agent == "O"): return -sum
+        return sum
+
     
     # TODO: @ccahrens
     # make this smarter based on who's winning
