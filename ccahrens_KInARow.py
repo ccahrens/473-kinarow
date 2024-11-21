@@ -216,20 +216,29 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
         sum: int = 0
         #unblockedRow: bool = True
         for i in range (0, nRows):
+            prevWasOpponent = False
             # get next row
             row = state.board[i]
             for j in range (0, mCols):
                 if row[j] == agent:
                     sum += 1
+                    prevWasOpponent = False
                 else:
                     sum -= j
+                    if (prevWasOpponent):
+                        sum -= j
+                    prevWasOpponent = True
 
         for j in range (0, mCols):
             for i in range (0, nRows):
                 if state.board[i][j] == agent:
                     sum += 1
+                    prevWasOpponent = False
                 else:
                     sum -= i
+                    if (prevWasOpponent):
+                        sum -= j
+                    prevWasOpponent = True
         if (agent == "O"): return -sum
         return sum
 

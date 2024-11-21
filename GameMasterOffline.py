@@ -121,6 +121,9 @@ def runGame():
             renderCommentary(possibleWin)
             if USE_HTML: gameToHTML.reportResult(possibleWin)
             if USE_HTML: gameToHTML.endHTML()
+            if (XsTurn == False):
+                return "X"
+            return "O"
             return
         printState(currentState)
         if USE_HTML: gameToHTML.stateToHTML(currentState)
@@ -183,14 +186,146 @@ def test():
     # which is a "twin".
 
     import ccahrens_KInARow as h
-    # import RandomPlayer as h
+    import RandomPlayer as m
     px = h.OurAgent()
-    po = h.OurAgent(twin=True)
+    # po = h.OurAgent(twin=True)
+    po = m.OurAgent()
     set_players(px, po)
     print("Players are set.")
     print("Now let's run the game.")
     runGame()
 
+def ccTestMany():
+    # Stand-alone test
+    print("Starting stand-alone test of GameMaster.py")
+    # Edit this to change what version of K-in-a-Row is used.
+    set_game(TTT) # default is Tic-Tac-Toe
+    #set_game(FIAR) # Five in a Row
+    # Import 1 or 2 agent files here.
+    # If using only 1, create 2 instances of it, one of
+    # which is a "twin".
+
+    # set up to play tic tac toe
+    opponent_wins_ttt = 0
+    we_win_ttt = 0
+    import ccahrens_KInARow as h
+    import RandomPlayer as m
+
+    # run games with our agent as x
+    for i in range (0, 1000):
+        px = h.OurAgent()
+        po = m.OurAgent()
+        set_players(px, po)
+        res = runGame()
+        if res is not None:
+            if res == "X":
+                we_win_ttt += 1
+            else:
+                opponent_wins_ttt += 1
+    # run games with our agent as O
+    for i in range (0, 1000):
+        po = h.OurAgent()
+        px = m.OurAgent()
+        set_players(px, po)
+        res = runGame()
+        if res is not None:
+            if res == "O":
+                we_win_ttt += 1
+            else:
+                opponent_wins_ttt += 1
+
+    # set up for FIAR
+    set_game(FIAR)
+    opponent_wins_fiar = 0
+    we_win_fiar = 0
+    # run games with our agent as X
+    for i in range (0, 1000):
+        px = h.OurAgent()
+        po = m.OurAgent()
+        set_players(px, po)
+        res = runGame()
+        if res is not None:
+            if res == "X":
+                we_win_fiar += 1
+            else:
+                opponent_wins_fiar += 1
+    # run games with our agent as O
+    for i in range (0, 1000):
+        po = h.OurAgent()
+        px = m.OurAgent()
+        set_players(px, po)
+        res = runGame()
+        if res is not None:
+            if res == "O":
+                we_win_fiar += 1
+            else:
+                opponent_wins_fiar += 1
+
+    # set up for cassini
+    set_game(Cassini)
+    opponent_wins_cassini = 0
+    we_win_cassini = 0
+    # run games with our agent as X
+    for i in range (0, 1000):
+        px = h.OurAgent()
+        po = m.OurAgent()
+        set_players(px, po)
+        res = runGame()
+        if res is not None:
+            if res == "X":
+                we_win_cassini += 1
+            else:
+                opponent_wins_cassini += 1
+    # run games with our agent as O
+    for i in range (0, 1000):
+        po = h.OurAgent()
+        px = m.OurAgent()
+        set_players(px, po)
+        res = runGame()
+        if res is not None:
+            if res == "O":
+                we_win_cassini += 1
+            else:
+                opponent_wins_cassini += 1
+    
+
+    # display results
+    print()
+    print("***TTT RESULTS***")
+    print(f"opponent wins: {opponent_wins_ttt}")
+    print(f"our wins: {we_win_ttt}")
+    print(f"our win rate: {100* we_win_ttt/(opponent_wins_ttt + we_win_ttt)}%")
+
+    print()
+    print("***FIAR RESULTS***")
+    print(f"opponent wins: {opponent_wins_fiar}")
+    print(f"our wins: {we_win_fiar}")
+    print(f"our win rate: {100* we_win_fiar/(opponent_wins_fiar + we_win_fiar)}%")
+
+    print()
+    print("***CASSINI RESULTS***")
+    print(f"opponent wins: {opponent_wins_cassini}")
+    print(f"our wins: {we_win_cassini}")
+    print(f"our win rate: {100*we_win_cassini/(opponent_wins_cassini + we_win_cassini)}%")
+
+
+# win rates as of Thursday, November 21, 2024
+# ***TTT RESULTS***
+# opponent wins: 1134
+# our wins: 768
+# our win rate: 40.37854889589905%
+
+# ***FIAR RESULTS***
+# opponent wins: 714
+# our wins: 1232
+# our win rate: 63.30935251798561%
+
+# ***CASSINI RESULTS***
+# opponent wins: 583
+# our wins: 1125
+# our win rate: 65.86651053864169%
+    
+
 if __name__ == '__main__':
-    test()
+    ccTestMany()
     
