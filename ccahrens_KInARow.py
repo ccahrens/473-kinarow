@@ -16,6 +16,7 @@ TO PROVIDE A GOOD STRUCTURE FOR YOUR IMPLEMENTATION.
 from agent_base import KAgent
 from game_types import State, Game_Type
 import game_types
+import winTesterForK
 
 AUTHORS = 'CC Ahrens and Cin Ahrens' 
 
@@ -82,7 +83,8 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
 
         print("code to compute a good move should go here.")
         possibleMoves = successors_and_moves(currentState)
-        myMove = self.chooseMove(possibleMoves, timeLimit)
+        print(currentState.whose_move)
+        myMove = self.chooseMove(possibleMoves, currentState.whose_move, timeLimit)
         myUtterance = self.nextUtterance()
         newState, newMove = myMove
         return [[newMove, newState], myUtterance]
@@ -112,14 +114,71 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
             zHashing=None):
         print("Calling minimax. We need to implement its body.")
 
-        default_score = 0 # Value of the passed-in state. Needs to be computed.
-    
-        return [default_score, "my own optional stuff", "more of my stuff"]
+        #default_score = 0 # Value of the passed-in state. Needs to be computed.
+        next_moves = successors_and_moves(state)
+
+        if (state.whose_move == 'X'):
+            v = -float("inf")
+            move = None
+            for successor, action in next_moves:
+                new_val = self.min_value(successor, 1, depthRemaining)
+                if(new_val > v):
+                    v = new_val
+                    move = action
+            
+            return [v, move]
+        else:
+            v = float("inf")
+            move = None
+
+            for successor, action in next_moves:
+                new_val = self.max_value(successor, 0, depthRemaining)
+                if(new_val < v):
+                    v = new_val
+                    move = action
+            
+            return [v, move]
         # Only the score is required here but other stuff can be returned
         # in the list, after the score, in case you want to pass info
         # back from recursive calls that might be used in your utterances,
         # etc. 
- 
+    def max_value(self, gameState, index, depthRemaining):
+
+        if(index == 0):
+            depthRemaining-=1
+
+        v = -float("inf")
+        # actions = gameState.getLegalActions(index)
+        next_moves = successors_and_moves(gameState)
+
+        next_ind = index ^ 1
+        
+        for successor, action in next_moves:
+            if(depthRemaining == 0 or winTesterForK(gameState, action, GAME_TYPE.k) != 'No Win'):
+                    return self.staticEval(gameState)
+            if(next_ind == 0):
+                v = max(v, self.max_value(successor, next_ind, depthRemaining))    
+            else:
+                v = max(v, self.min_value(successor, next_ind, depthRemaining))
+        return v
+
+    def min_value(self, gameState, index, depthRemaining):
+        if(index == 0):
+            depthRemaining-=1
+
+        v = float("inf")
+        next_moves = successors_and_moves(gameState)
+
+        next_ind = index ^ 1
+        
+        for successor, action in next_moves:
+            if(depthRemaining == 0 or winTesterForK(gameState, action, GAME_TYPE.k) != 'No Win'):
+                    return self.staticEval(gameState)
+            if(next_ind == 0):
+                v = min(v, self.max_value(successor, next_ind, depthRemaining))
+            else:
+                v = min(v, self.min_value(successor, next_ind, depthRemaining))
+        return v
 
     # TODO: @ccahrens
     # some things are better for different shapes,
@@ -153,7 +212,7 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
         self.utt_count += 1
         return this_utterance
     
-    def chooseMove(self, statesAndMoves, timeLimit):
+    def chooseMove(self, statesAndMoves, whosemove, timeLimit):
         states, moves = statesAndMoves
         if states==[]: return None
         i = 0
