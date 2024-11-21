@@ -30,9 +30,9 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
     def __init__(self, twin=False):
         self.twin=twin
         self.nickname = 'Ducky Wucky'
-        if twin: self.nickname += '2'
-        self.long_name = 'Birdy Wordy'
-        if twin: self.long_name += ' the Wise'
+        if twin: self.nickname = 'Birdy Wordy'
+        self.long_name = 'Duckilisious Wuckington'
+        if twin: self.long_name = 'Birdy Wordy the Wise'
         self.persona = 'bland'
         self.voice_info = {'Chrome': 10, 'Firefox': 2, 'other': 0}
         self.playing = "don't know yet" # e.g., "X" or "O".
@@ -81,8 +81,6 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
         print("makeMove has been called")
 
         print("code to compute a good move should go here.")
-        #possibleMoves = successors_and_moves(state)
-        #myMove = self.minimax(currentState,timeLimit)
         possibleMoves = successors_and_moves(currentState)
         myMove = self.chooseMove(possibleMoves, timeLimit)
         myUtterance = self.nextUtterance()
@@ -127,12 +125,21 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
         return 0
     
     def nextUtterance(self):
+        if (self.twin):
+            if self.repeat_count > 1: return "I am randomed out now."
+            n = len(BIRDY_BANK)
+            if self.utt_count == n:
+                self.utt_count = 0
+                self.repeat_count += 1
+            this_utterance = BIRDY_BANK[self.utt_count]
+            self.utt_count += 1
+            return this_utterance
         if self.repeat_count > 1: return "I am randomed out now."
-        n = len(UTTERANCE_BANK)
+        n = len(DUCKY_BANK)
         if self.utt_count == n:
             self.utt_count = 0
             self.repeat_count += 1
-        this_utterance = UTTERANCE_BANK[self.utt_count]
+        this_utterance = DUCKY_BANK[self.utt_count]
         self.utt_count += 1
         return this_utterance
     
@@ -179,7 +186,7 @@ def do_move(state, i, j, o):
             news.whose_move = o
             return news
     
-UTTERANCE_BANK = ["How's that for random?",
+DUCKY_BANK = ["How's that for random?",
                   "Flip!",
                   "Spin!",
                   "I hope this is my lucky day!",
@@ -195,7 +202,22 @@ UTTERANCE_BANK = ["How's that for random?",
                   "Yes, I am on a roll -- of my virtual dice.",
                   "randint is my cousin.",
                   "I like to spread my influence around on the board."]
- 
+BIRDY_BANK = ["How's that for random?",
+                  "Flip!",
+                  "Spin!",
+                  "I hope this is my lucky day!",
+                  "How's this move for high noise to signal ratio?",
+                  "Uniformly distributed. That's me.",
+                  "Maybe I'll look into Bayes' Nets in the future.",
+                  "Eenie Meenie Miney Mo.  I hope I'm getting K in a row.",
+                  "Your choice is probably more informed than mine.",
+                  "If I only had a brain.",
+                  "I'd while away the hours, playing K in a Row.",
+                  "So much fun.",
+                  "Roll the dice!",
+                  "Yes, I am on a roll -- of my virtual dice.",
+                  "randint is my cousin.",
+                  "I like to spread my influence around on the board."]
 # OPTIONAL THINGS TO KEEP TRACK OF:
 
 #  WHO_MY_OPPONENT_PLAYS = other(WHO_I_PLAY)
