@@ -127,7 +127,7 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
             for i in range(len):
                 successor = next_moves[0][i]
                 action = next_moves[1][i]
-                new_val = self.min_value(successor, 1, depthRemaining)
+                new_val = self.min_value(successor, depthRemaining, alpha=float("-inf"), beta=float("inf"), pruning=pruning)
                 if(new_val > v):
                     v = new_val
                     move = action
@@ -142,7 +142,7 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
             for i in range(len):
                 successor = next_moves[0][i]
                 action = next_moves[1][i]
-                new_val = self.max_value(successor, 0, depthRemaining)
+                new_val = self.max_value(successor, depthRemaining, alpha=float("-inf"), beta=float("inf"), pruning=pruning)
                 if(new_val < v):
                     v = new_val
                     move = action
@@ -153,16 +153,13 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
         # in the list, after the score, in case you want to pass info
         # back from recursive calls that might be used in your utterances,
         # etc. 
-    def max_value(self, gameState, index, depthRemaining):
+    def max_value(self, gameState, depthRemaining, alpha=None, beta=None, pruning=False):
 
-        if(index == 0):
-            depthRemaining-=1
+        depthRemaining-=1
 
         v = -float("inf")
         # actions = gameState.getLegalActions(index)
         next_moves = successors_and_moves(gameState)
-
-        next_ind = index ^ 1
         
         len = next_moves[0].__len__()
         for i in range(len):
@@ -170,20 +167,18 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
             action = next_moves[1][i]
             if(depthRemaining == 0 or winTesterForK(gameState, action, GAME_TYPE.k) != 'No Win'):
                     return self.staticEval(gameState)
-            if(next_ind == 0):
-                v = max(v, self.max_value(successor, next_ind, depthRemaining))    
-            else:
-                v = max(v, self.min_value(successor, next_ind, depthRemaining))
+            v = max(v, self.min_value(successor, depthRemaining, alpha, beta))
+            if pruning:
+                alpha = max(alpha, v)
+                if beta <= alpha:
+                    break
         return v
 
-    def min_value(self, gameState, index, depthRemaining):
-        if(index == 0):
-            depthRemaining-=1
+    def min_value(self, gameState, depthRemaining, alpha = None, beta = None, pruning = False):
+        depthRemaining-=1
 
         v = float("inf")
         next_moves = successors_and_moves(gameState)
-
-        next_ind = index ^ 1
         
         len = next_moves[0].__len__()
         for i in range(len):
@@ -191,10 +186,11 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
             action = next_moves[1][i]
             if(depthRemaining == 0 or winTesterForK(gameState, action, GAME_TYPE.k) != 'No Win'):
                     return self.staticEval(gameState)
-            if(next_ind == 0):
-                v = min(v, self.max_value(successor, next_ind, depthRemaining))
-            else:
-                v = min(v, self.min_value(successor, next_ind, depthRemaining))
+            v = min(v, self.max_value(successor, depthRemaining, alpha, beta))
+            if pruning:
+                beta = min(beta, eval)
+                if beta <= alpha:
+                    break
         return v
 
     # TODO: @ccahrens
