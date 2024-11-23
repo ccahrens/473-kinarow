@@ -121,7 +121,7 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
         if not states:
             return self.staticEval(state), None, None
         
-        cutoff = 4
+        cutoff = 3
 
         if (self.who_i_play == 'X'):
             v = float("-inf")
@@ -164,11 +164,9 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
         length = len(states)
         for i in range(length):
             successor = states[i]
-            action = moves[i]
-            #print("WIN TESTER: ", winTesterForK(gameState, action, GAME_TYPE.k))
-            if(depthRemaining == 1 or gameState.finished):
+            if(depthRemaining == 0 or gameState.finished):
                     return self.staticEval(gameState)
-            v = max(v, self.min_value(successor, depthRemaining - 1, alpha, beta))
+            v = max(v, self.min_value(successor, depthRemaining - 1, alpha, beta, pruning))
             if pruning:
                 alpha = max(alpha, v)
                 if beta <= alpha:
@@ -184,10 +182,9 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
         length = len(states)
         for i in range(length):
             successor = states[i]
-            action = moves[i]
-            if(depthRemaining == 1 or gameState.finished):
+            if(depthRemaining == 0 or gameState.finished):
                     return self.staticEval(gameState)
-            v = min(v, self.max_value(successor, depthRemaining - 1, alpha, beta))
+            v = min(v, self.max_value(successor, depthRemaining - 1, alpha, beta, pruning))
             if pruning:
                 beta = min(beta, v)
                 if beta <= alpha:

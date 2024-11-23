@@ -461,11 +461,28 @@ def cinTestMany():
     print("***STATIC EVAL ACCESSES***")
     print(f"static eval accesses: {static_eval_accesses}")
 
-    # static eval accesses with no depth cut off, 10 games per set up, and alpha-beta cutoffs: 18458
-    # static eval accesses with no depth cut off, 10 games per set up, and NO alpha-beta cutoffs: 17988
+    # Depth limit: 3
+    # Pruning: True
+    # Total games: 60
 
+    # ***TTT RESULTS***
+    # opponent wins: 13
+    # our wins: 4
+    # our win rate: 23.529411764705884%
 
-    
+    # ***FIAR RESULTS***
+    # opponent wins: 5
+    # our wins: 14
+    # our win rate: 73.6842105263158%
+
+    # ***CASSINI RESULTS***
+    # opponent wins: 6
+    # our wins: 11
+    # our win rate: 64.70588235294117%
+
+    # ***STATIC EVAL ACCESSES***
+    # static eval accesses: 18150738
+
 
 if __name__ == '__main__':
     cinTestMany()
