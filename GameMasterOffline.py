@@ -324,8 +324,137 @@ def ccTestMany():
 # opponent wins: 583
 # our wins: 1125
 # our win rate: 65.86651053864169%
+
+def cinTestMany():
+    # Stand-alone test
+    print("Starting stand-alone test of GameMaster.py")
+    # Edit this to change what version of K-in-a-Row is used.
+    set_game(TTT) # default is Tic-Tac-Toe
+    #set_game(FIAR) # Five in a Row
+    # Import 1 or 2 agent files here.
+    # If using only 1, create 2 instances of it, one of
+    # which is a "twin".
+
+    # set up to play tic tac toe
+    opponent_wins_ttt = 0
+    we_win_ttt = 0
+    static_eval_accesses = 0
+    import ccahrens_KInARow as h
+    import RandomPlayer as m
+
+    # run games with our agent as x
+    for i in range (0, 10):
+        px = h.OurAgent()
+        po = m.OurAgent()
+        set_players(px, po)
+        res = runGame()
+        if res is not None:
+            if res == "X":
+                we_win_ttt += 1
+            else:
+                opponent_wins_ttt += 1
+            static_eval_accesses += px.eval_calls
+    # run games with our agent as O
+    for i in range (0, 10):
+        po = h.OurAgent()
+        px = m.OurAgent()
+        set_players(px, po)
+        res = runGame()
+        if res is not None:
+            if res == "O":
+                we_win_ttt += 1
+            else:
+                opponent_wins_ttt += 1
+            static_eval_accesses += po.eval_calls
+
+    # set up for FIAR
+    set_game(FIAR)
+    opponent_wins_fiar = 0
+    we_win_fiar = 0
+    # run games with our agent as X
+    for i in range (0, 10):
+        px = h.OurAgent()
+        po = m.OurAgent()
+        set_players(px, po)
+        res = runGame()
+        if res is not None:
+            if res == "X":
+                we_win_fiar += 1
+            else:
+                opponent_wins_fiar += 1
+            static_eval_accesses += px.eval_calls
+    # run games with our agent as O
+    for i in range (0, 10):
+        po = h.OurAgent()
+        px = m.OurAgent()
+        set_players(px, po)
+        res = runGame()
+        if res is not None:
+            if res == "O":
+                we_win_fiar += 1
+            else:
+                opponent_wins_fiar += 1
+            static_eval_accesses += po.eval_calls
+
+    # set up for cassini
+    set_game(Cassini)
+    opponent_wins_cassini = 0
+    we_win_cassini = 0
+    # run games with our agent as X
+    for i in range (0, 10):
+        px = h.OurAgent()
+        po = m.OurAgent()
+        set_players(px, po)
+        res = runGame()
+        if res is not None:
+            if res == "X":
+                we_win_cassini += 1
+            else:
+                opponent_wins_cassini += 1
+            static_eval_accesses += px.eval_calls
+    # run games with our agent as O
+    for i in range (0, 10):
+        po = h.OurAgent()
+        px = m.OurAgent()
+        set_players(px, po)
+        res = runGame()
+        if res is not None:
+            if res == "O":
+                we_win_cassini += 1
+            else:
+                opponent_wins_cassini += 1
+            static_eval_accesses += po.eval_calls
+    
+
+    # display results
+    print()
+    print("***TTT RESULTS***")
+    print(f"opponent wins: {opponent_wins_ttt}")
+    print(f"our wins: {we_win_ttt}")
+    print(f"our win rate: {100* we_win_ttt/(opponent_wins_ttt + we_win_ttt)}%")
+
+    print()
+    print("***FIAR RESULTS***")
+    print(f"opponent wins: {opponent_wins_fiar}")
+    print(f"our wins: {we_win_fiar}")
+    print(f"our win rate: {100* we_win_fiar/(opponent_wins_fiar + we_win_fiar)}%")
+
+    print()
+    print("***CASSINI RESULTS***")
+    print(f"opponent wins: {opponent_wins_cassini}")
+    print(f"our wins: {we_win_cassini}")
+    print(f"our win rate: {100*we_win_cassini/(opponent_wins_cassini + we_win_cassini)}%")
+
+    print()
+    print("***STATIC EVAL ACCESSES***")
+    print(f"static eval accesses: {static_eval_accesses}")
+
+    # static eval accesses with no depth cut off, 10 games per set up, and alpha-beta cutoffs: 18458
+    # static eval accesses with no depth cut off, 10 games per set up, and NO alpha-beta cutoffs: 17988
+
+
     
 
 if __name__ == '__main__':
-    ccTestMany()
+    cinTestMany()
     

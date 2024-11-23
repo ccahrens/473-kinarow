@@ -74,6 +74,7 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
        self.opponent_past_utterances = []
        self.repeat_count = 0
        self.utt_count = 0
+       self.eval_calls = 0
        if self.twin: self.utt_count = 5 # Offset the twin's utterances.
        return "OK"
    
@@ -82,7 +83,7 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
         print("makeMove has been called")
 
         print("code to compute a good move should go here.")
-        value, newMove, newState = self.minimax(currentState, timeLimit)
+        value, newMove, newState = self.minimax(currentState, timeLimit, pruning=False)
         # possibleMoves = successors_and_moves(currentState)
         # print(currentState.whose_move)
         # myMove = self.chooseMove(possibleMoves, currentState.whose_move, timeLimit)
@@ -198,6 +199,9 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
     # figure out how to tell what shape you're playing
     def staticEval(self, state):
         print('calling staticEval')
+        # NOTE FROM CIN:
+        # This is for my testing functions, please leave it as is!
+        self.eval_calls += 1
         # Values should be higher when the states are better for X,
         # lower when better for O.
 
