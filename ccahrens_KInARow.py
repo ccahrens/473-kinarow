@@ -83,7 +83,7 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
         print("makeMove has been called")
 
         print("code to compute a good move should go here.")
-        value, newMove, newState = self.minimax(currentState, timeLimit, pruning=False)
+        value, newMove, newState = self.minimax(currentState, timeLimit, pruning=True)
         # possibleMoves = successors_and_moves(currentState)
         # print(currentState.whose_move)
         # myMove = self.chooseMove(possibleMoves, currentState.whose_move, timeLimit)
@@ -117,58 +117,58 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
         print("Calling minimax. We need to implement its body.")
 
         #default_score = 0 # Value of the passed-in state. Needs to be computed.
-        next_moves = successors_and_moves(state)
-        #print(next_moves)
+        states, moves = self.successors_and_moves(state)
+        if not states:
+            return self.staticEval(state), None, None
+        
+        cutoff = 4
 
-        if (state.whose_move == 'X'):
-            v = -float("inf")
+        if (self.who_i_play == 'X'):
+            v = float("-inf")
             move = None
             state = None
-            len = next_moves[0].__len__()
-            for i in range(len):
-                successor = next_moves[0][i]
-                action = next_moves[1][i]
-                new_val = self.min_value(successor, depthRemaining, alpha=float("-inf"), beta=float("inf"), pruning=pruning)
+            length = len(states)
+            for i in range(length):
+                successor = states[i]
+                action = moves[i]
+                new_val = self.max_value(successor, cutoff, alpha=float("-inf"), beta=float("inf"), pruning=pruning)
                 if(new_val > v):
                     v = new_val
                     move = action
                     state = successor
-            
             return [v, move, state]
         else:
             v = float("inf")
             move = None
             state = None
-            len = next_moves[0].__len__()
-            for i in range(len):
-                successor = next_moves[0][i]
-                action = next_moves[1][i]
-                new_val = self.max_value(successor, depthRemaining, alpha=float("-inf"), beta=float("inf"), pruning=pruning)
+            length = len(states)
+            for i in range(length):
+                successor = states[i]
+                action = moves[i]
+                new_val = self.min_value(successor, cutoff, alpha=float("-inf"), beta=float("inf"), pruning=pruning)
                 if(new_val < v):
                     v = new_val
                     move = action
                     state = successor
-            
             return [v, move, state]
         # Only the score is required here but other stuff can be returned
         # in the list, after the score, in case you want to pass info
         # back from recursive calls that might be used in your utterances,
         # etc. 
     def max_value(self, gameState, depthRemaining, alpha=None, beta=None, pruning=False):
-
-        depthRemaining-=1
-
-        v = -float("inf")
-        # actions = gameState.getLegalActions(index)
-        next_moves = successors_and_moves(gameState)
+        v = float("-inf")
+        states, moves = self.successors_and_moves(gameState)
+        if not states:
+            return self.staticEval(gameState)
         
-        len = next_moves[0].__len__()
-        for i in range(len):
-            successor = next_moves[0][i]
-            action = next_moves[1][i]
-            if(depthRemaining == 0 or winTesterForK(gameState, action, GAME_TYPE.k) != 'No Win'):
+        length = len(states)
+        for i in range(length):
+            successor = states[i]
+            action = moves[i]
+            #print("WIN TESTER: ", winTesterForK(gameState, action, GAME_TYPE.k))
+            if(depthRemaining == 1 or gameState.finished):
                     return self.staticEval(gameState)
-            v = max(v, self.min_value(successor, depthRemaining, alpha, beta))
+            v = max(v, self.min_value(successor, depthRemaining - 1, alpha, beta))
             if pruning:
                 alpha = max(alpha, v)
                 if beta <= alpha:
@@ -176,20 +176,20 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
         return v
 
     def min_value(self, gameState, depthRemaining, alpha = None, beta = None, pruning = False):
-        depthRemaining-=1
-
         v = float("inf")
-        next_moves = successors_and_moves(gameState)
+        states, moves = self.successors_and_moves(gameState)
+        if not states:
+            return self.staticEval(gameState)
         
-        len = next_moves[0].__len__()
-        for i in range(len):
-            successor = next_moves[0][i]
-            action = next_moves[1][i]
-            if(depthRemaining == 0 or winTesterForK(gameState, action, GAME_TYPE.k) != 'No Win'):
+        length = len(states)
+        for i in range(length):
+            successor = states[i]
+            action = moves[i]
+            if(depthRemaining == 1 or gameState.finished):
                     return self.staticEval(gameState)
-            v = min(v, self.max_value(successor, depthRemaining, alpha, beta))
+            v = min(v, self.max_value(successor, depthRemaining - 1, alpha, beta))
             if pruning:
-                beta = min(beta, eval)
+                beta = min(beta, v)
                 if beta <= alpha:
                     break
         return v
@@ -266,49 +266,48 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
         self.utt_count += 1
         return this_utterance
     
-    def chooseMove(self, statesAndMoves, whosemove, timeLimit):
-        states, moves = statesAndMoves
-        if states==[]: return None
-        i = 0
-        curr = -float("inf")
-        best_i = i
-        for state in states:
-            new = self.staticEval(state)
-            if (new > curr):
-                curr = new
-                best_i = i
-            i += 1
-        my_choice = [states[best_i], moves[best_i]]
-        return my_choice
+    def other(self, p):
+        if p=='X': return 'O'
+        return 'X' 
     
-def other(p):
-    if p=='X': return 'O'
-    return 'X'
+    def successors_and_moves(self, state):
+        b = state.board
+        p = state.whose_move
+        o = self.other(p)
+        new_states = []
+        moves = []
+        mCols = len(b[0])
+        nRows = len(b)
 
+        for i in range(nRows):
+            for j in range(mCols):
+                if b[i][j] == ' ':
+                    news = self.do_move(state, i, j, o)
+                    new_states.append(news)
+                    moves.append((i, j))
+        return new_states, moves
 
-def successors_and_moves(state):
-    b = state.board
-    p = state.whose_move
-    o = other(p)
-    new_states = []
-    moves = []
-    mCols = len(b[0])
-    nRows = len(b)
+    def do_move(self, state, i, j, o):
+                news = game_types.State(old=state)
+                news.board[i][j] = state.whose_move
+                news.whose_move = o
+                return news
 
-    for i in range(nRows):
-        for j in range(mCols):
-            if b[i][j] != ' ': continue
-            news = do_move(state, i, j, o)
-            new_states.append(news)
-            moves.append([i, j])
-    return [new_states, moves]
-
-def do_move(state, i, j, o):
-            news = game_types.State(old=state)
-            news.board[i][j] = state.whose_move
-            news.whose_move = o
-            return news
     
+    # def chooseMove(self, statesAndMoves, whosemove, timeLimit):
+    #     states, moves = statesAndMoves
+    #     if states==[]: return None
+    #     i = 0
+    #     curr = -float("inf")
+    #     best_i = i
+    #     for state in states:
+    #         new = self.staticEval(state)
+    #         if (new > curr):
+    #             curr = new
+    #             best_i = i
+    #         i += 1
+    #     my_choice = [states[best_i], moves[best_i]]
+    #     return my_choice  
 
 # TODO: @ccahrens
 # Write better commentary for each
