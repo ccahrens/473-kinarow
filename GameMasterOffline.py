@@ -465,23 +465,23 @@ def cinTestMany():
     # Pruning: True
     # Total games: 60
 
-    # ***TTT RESULTS***
-    # opponent wins: 13
-    # our wins: 4
-    # our win rate: 23.529411764705884%
+    #***TTT RESULTS***
+    # opponent wins: 16
+    # our wins: 3
+    # our win rate: 15.789473684210526%
 
     # ***FIAR RESULTS***
-    # opponent wins: 5
-    # our wins: 14
-    # our win rate: 73.6842105263158%
+    # opponent wins: 6
+    # our wins: 13
+    # our win rate: 68.42105263157895%
 
     # ***CASSINI RESULTS***
-    # opponent wins: 6
-    # our wins: 11
-    # our win rate: 64.70588235294117%
+    # opponent wins: 9
+    # our wins: 8
+    # our win rate: 47.05882352941177%
 
     # ***STATIC EVAL ACCESSES***
-    # static eval accesses: 18150738
+    # static eval accesses: 21277103
 
 
 if __name__ == '__main__':
