@@ -343,7 +343,9 @@ def cinTestMany():
     import RandomPlayer as m
 
     # run games with our agent as x
+    print("Starting TTT X games...")
     for i in range (0, 10):
+        print(f"...running game {i + 1}")
         px = h.OurAgent()
         po = m.OurAgent()
         set_players(px, po)
@@ -355,7 +357,9 @@ def cinTestMany():
                 opponent_wins_ttt += 1
             static_eval_accesses += px.eval_calls
     # run games with our agent as O
+    print("Starting TTT O games...")
     for i in range (0, 10):
+        print(f"...running game {i + 1}")
         po = h.OurAgent()
         px = m.OurAgent()
         set_players(px, po)
@@ -372,7 +376,9 @@ def cinTestMany():
     opponent_wins_fiar = 0
     we_win_fiar = 0
     # run games with our agent as X
+    print("Starting FIAR X games...")
     for i in range (0, 10):
+        print(f"...running game {i + 1}")
         px = h.OurAgent()
         po = m.OurAgent()
         set_players(px, po)
@@ -384,7 +390,9 @@ def cinTestMany():
                 opponent_wins_fiar += 1
             static_eval_accesses += px.eval_calls
     # run games with our agent as O
+    print("Starting FIAR O games...")
     for i in range (0, 10):
+        print(f"...running game {i + 1}")
         po = h.OurAgent()
         px = m.OurAgent()
         set_players(px, po)
@@ -401,7 +409,9 @@ def cinTestMany():
     opponent_wins_cassini = 0
     we_win_cassini = 0
     # run games with our agent as X
+    print("Starting CASSINI X games...")
     for i in range (0, 10):
+        print(f"...running game {i + 1}")
         px = h.OurAgent()
         po = m.OurAgent()
         set_players(px, po)
@@ -413,7 +423,9 @@ def cinTestMany():
                 opponent_wins_cassini += 1
             static_eval_accesses += px.eval_calls
     # run games with our agent as O
+    print("Starting CASSINI O games...")
     for i in range (0, 10):
+        print(f"...running game {i + 1}")
         po = h.OurAgent()
         px = m.OurAgent()
         set_players(px, po)
