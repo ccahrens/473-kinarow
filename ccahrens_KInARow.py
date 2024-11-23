@@ -17,6 +17,7 @@ from agent_base import KAgent
 from game_types import State, Game_Type
 import game_types
 from winTesterForK import winTesterForK
+import random
 
 AUTHORS = 'CC Ahrens and Cin Ahrens' 
 
@@ -37,6 +38,13 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
         self.persona = 'bland'
         self.voice_info = {'Chrome': 10, 'Firefox': 2, 'other': 0}
         self.playing = "don't know yet" # e.g., "X" or "O".
+        self.my_past_utterances = []
+        self.opponent_past_utterances = []
+        self.repeat_count = 0
+        self.utt_count = 0
+        self.eval_calls = 0
+        self.zobrist = []
+        self.hashings = {}
 
     def introduce(self):
         intro = '\nMy name is ' + self.nickname + ', the great K In A Row Champion!\n'+\
@@ -70,12 +78,8 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
        global GAME_TYPE
        GAME_TYPE = game_type
        print("Oh, I love playing Duck Duck ", game_type.long_name)
-       self.my_past_utterances = []
-       self.opponent_past_utterances = []
-       self.repeat_count = 0
-       self.utt_count = 0
-       self.eval_calls = 0
        if self.twin: self.utt_count = 5 # Offset the twin's utterances.
+       self.zobrist = self.build_table(game_type.n, game_type.m)
        return "OK"
    
     # The core of your agent's ability should be implemented here:             
@@ -83,26 +87,19 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
         print("makeMove has been called")
 
         print("code to compute a good move should go here.")
-        value, newMove, newState = self.minimax(currentState, timeLimit, pruning=True)
-        # possibleMoves = successors_and_moves(currentState)
-        # print(currentState.whose_move)
-        # myMove = self.chooseMove(possibleMoves, currentState.whose_move, timeLimit)
-        myUtterance = self.nextUtterance()
-        #newState, newMove = myMove
-        return [[newMove, newState], myUtterance]
-        # # Here's a placeholder:
-        # a_default_move = [0, 0] # This might be legal ONCE in a game,
-        # # if the square is not forbidden or already occupied.
-    
-        # newState = currentState # This is not allowed, and even if
-        # # it were allowed, the newState should be a deep COPY of the old.
-        # print("CURRENT STATE", currentState)
-    
-        # newRemark = "I need to think of something appropriate.\n" +\
-        # "Well, I guess I can say that this move is probably illegal."
 
-        # print("Returning from makeMove")
-        # return [[a_default_move, newState], newRemark]
+        depth_limit = 4
+        hash = self.hash(currentState)
+        value, newMove, newState = self.minimax(currentState, depth_limit, alpha=float("-inf"), beta=float("inf"), pruning=True, zHashing=hash, x = self.who_i_play == 'X')
+
+        other = self.other(currentState.whose_move)
+        n_hash = self.rehash(self.who_i_play, hash, newMove[0], newMove[1])
+
+        if n_hash not in self.hashings:
+            self.hashings[n_hash] = (None, None)
+
+        myUtterance = self.nextUtterance()
+        return [[newMove, newState], myUtterance]
 
     # TODO: @cinahrens
     # 0's are mins, X's are maxes!
@@ -113,89 +110,81 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
             pruning=False,
             alpha=None,
             beta=None,
-            zHashing=None):
-        print("Calling minimax. We need to implement its body.")
+            zHashing=None, x=True):
+        
+        if zHashing is None:
+            zHashing = self.hash(state)
 
-        #default_score = 0 # Value of the passed-in state. Needs to be computed.
+        if zHashing in self.hashings and depthRemaining in self.hashings[zHashing]:
+            value, move = self.hashings[zHashing][depthRemaining]
+            next_state = self.do_move(state, move[0], move[1], self.other(state.whose_move))
+            return value, move, next_state
+    
         states, moves = self.successors_and_moves(state)
-        if not states:
-            return self.staticEval(state), None, None
+    
+        if(depthRemaining == 0 or state.finished or not states):
+            value = self.staticEval(state)
+            self.cache(zHashing, depthRemaining, value, None)
+            return value, None, None
         
-        cutoff = 3
-
-        if (self.who_i_play == 'X'):
-            v = float("-inf")
-            move = None
-            state = None
-            length = len(states)
-            for i in range(length):
-                successor = states[i]
-                action = moves[i]
-                new_val = self.max_value(successor, cutoff, alpha=float("-inf"), beta=float("inf"), pruning=pruning)
-                if(new_val > v):
-                    v = new_val
-                    move = action
-                    state = successor
-            return [v, move, state]
-        else:
-            v = float("inf")
-            move = None
-            state = None
-            length = len(states)
-            for i in range(length):
-                successor = states[i]
-                action = moves[i]
-                new_val = self.min_value(successor, cutoff, alpha=float("-inf"), beta=float("inf"), pruning=pruning)
-                if(new_val < v):
-                    v = new_val
-                    move = action
-                    state = successor
-            return [v, move, state]
-        # Only the score is required here but other stuff can be returned
-        # in the list, after the score, in case you want to pass info
-        # back from recursive calls that might be used in your utterances,
-        # etc. 
-    def max_value(self, gameState, depthRemaining, alpha=None, beta=None, pruning=False):
-        v = float("-inf")
-        states, moves = self.successors_and_moves(gameState)
-        if not states:
-            return self.staticEval(gameState)
-        
+        move = None
+        next_state = None
         length = len(states)
+        v = float("inf")
+        if x:
+            v = -1 * v
+
         for i in range(length):
             successor = states[i]
-            if(depthRemaining == 0 or gameState.finished):
-                    return self.staticEval(gameState)
-            v = max(v, self.min_value(successor, depthRemaining - 1, alpha, beta, pruning))
+            action = moves[i]
+            new_hash = self.rehash(state.whose_move, zHashing, action[0], action[1])
+            new_v, new_move, new_state = self.minimax(successor, depthRemaining - 1, pruning, alpha, beta, new_hash, not x)
+            if ((new_v > v and x) or (new_v < v and not x)):
+                v = new_v
+                next_state = successor
+                move = action
             if pruning:
                 alpha = max(alpha, v)
-                if beta <= alpha:
-                    break
-        return v
-
-    def min_value(self, gameState, depthRemaining, alpha = None, beta = None, pruning = False):
-        v = float("inf")
-        states, moves = self.successors_and_moves(gameState)
-        if not states:
-            return self.staticEval(gameState)
-        
-        length = len(states)
-        for i in range(length):
-            successor = states[i]
-            if(depthRemaining == 0 or gameState.finished):
-                    return self.staticEval(gameState)
-            v = min(v, self.max_value(successor, depthRemaining - 1, alpha, beta, pruning))
-            if pruning:
                 beta = min(beta, v)
                 if beta <= alpha:
                     break
-        return v
+        self.cache(zHashing, depthRemaining, v, move)
+        return [v, move, next_state]
 
+
+    def build_table(self, rows, columns):
+        zobrist = {}
+        for col in range(columns):
+            for row in range(rows):
+                for option in [' ','X','O']:
+                    zobrist[(row, col, option)] = random.getrandbits(64)
+        return zobrist
+    
+    def hash(self, state):
+        rows = len(state.board)
+        cols = len(state.board[0])
+        hash = 0
+        for row in range(rows):
+            for col in range(cols):
+                option = state.board[row][col]
+                if option is not "-":
+                    hash ^= self.zobrist[(row, col, option)]  # XOR for each board cell
+        return hash
+    
+    def rehash(self, player, hash, row, column):
+        unplayed = self.zobrist[(row, column, ' ')]
+        option = self.zobrist[(row, column, player)]
+        return unplayed ^ option ^ hash
+    
+    def cache(self, hash, depth, value, move):
+        if hash not in self.hashings:
+            self.hashings[hash] = {}
+        self.hashings[hash][depth] = (value, move)
     # TODO: @ccahrens
     # some things are better for different shapes,
     # figure out how to tell what shape you're playing
     def staticEval(self, state):
-        print('calling staticEval')
+        #print('calling staticEval')
         # NOTE FROM CIN:
         # This is for my testing functions, please leave it as is!
         self.eval_calls += 1
@@ -291,21 +280,6 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
                 return news
 
     
-    # def chooseMove(self, statesAndMoves, whosemove, timeLimit):
-    #     states, moves = statesAndMoves
-    #     if states==[]: return None
-    #     i = 0
-    #     curr = -float("inf")
-    #     best_i = i
-    #     for state in states:
-    #         new = self.staticEval(state)
-    #         if (new > curr):
-    #             curr = new
-    #             best_i = i
-    #         i += 1
-    #     my_choice = [states[best_i], moves[best_i]]
-    #     return my_choice  
-
 # TODO: @ccahrens
 # Write better commentary for each
 # list of lists
