@@ -186,7 +186,8 @@ def test():
     # which is a "twin".
 
     import ccahrens_KInARow as h
-    import RandomPlayer as m
+    import ccahrens_KInARow as m
+    #import RandomPlayer as m
     px = h.OurAgent()
     # po = h.OurAgent(twin=True)
     po = m.OurAgent()
@@ -194,6 +195,8 @@ def test():
     print("Players are set.")
     print("Now let's run the game.")
     runGame()
+    print("X accesses: ", px.eval_calls)
+    print("O accesses: ", po.eval_calls)
 
 def ccTestMany():
     # Stand-alone test
@@ -341,7 +344,7 @@ def cinTestMany():
     static_eval_accesses = 0
     import ccahrens_KInARow as h
     import RandomPlayer as m
-    num_matched = 20
+    num_matched = 1000
 
     # run games with our agent as x
     print("Starting TTT X games...")
@@ -486,5 +489,5 @@ def cinTestMany():
 
 
 if __name__ == '__main__':
-    cinTestMany()
+    test()
     

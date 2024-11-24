@@ -88,9 +88,9 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
 
         print("code to compute a good move should go here.")
 
-        depth_limit = 4
+        depth_limit = 3
         hash = self.hash(currentState)
-        value, newMove, newState = self.minimax(currentState, depth_limit, alpha=float("-inf"), beta=float("inf"), pruning=True, zHashing=hash, x = self.who_i_play == 'X')
+        _, newMove, newState = self.minimax(currentState, depth_limit, alpha=float("-inf"), beta=float("inf"), pruning=False, zHashing=hash, x = self.who_i_play == 'X')
 
         other = self.other(currentState.whose_move)
         n_hash = self.rehash(self.who_i_play, hash, newMove[0], newMove[1])
@@ -117,7 +117,10 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
 
         if zHashing in self.hashings and depthRemaining in self.hashings[zHashing]:
             value, move = self.hashings[zHashing][depthRemaining]
-            next_state = self.do_move(state, move[0], move[1], self.other(state.whose_move))
+            if move:
+                next_state = self.do_move(state, move[0], move[1], self.other(state.whose_move))
+            else:
+                next_state = None
             return value, move, next_state
     
         states, moves = self.successors_and_moves(state)
@@ -138,7 +141,7 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
             successor = states[i]
             action = moves[i]
             new_hash = self.rehash(state.whose_move, zHashing, action[0], action[1])
-            new_v, new_move, new_state = self.minimax(successor, depthRemaining - 1, pruning, alpha, beta, new_hash, not x)
+            new_v, _, _ = self.minimax(successor, depthRemaining - 1, pruning, alpha, beta, new_hash, not x)
             if ((new_v > v and x) or (new_v < v and not x)):
                 v = new_v
                 next_state = successor
