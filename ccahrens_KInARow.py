@@ -1,23 +1,11 @@
-'''
-<yourUWNetID>_KInARow.py
-Authors: <your name(s) here, lastname first and partners separated by ";">
-  Example:  
-    Authors: Smith, Jane; Lee, Laura
-
-An agent for playing "K-in-a-Row with Forbidden Squares" and related games.
-CSE 473, University of Washington
-
-THIS IS A TEMPLATE WITH STUBS FOR THE REQUIRED FUNCTIONS.
-YOU CAN ADD WHATEVER ADDITIONAL FUNCTIONS YOU NEED IN ORDER
-TO PROVIDE A GOOD STRUCTURE FOR YOUR IMPLEMENTATION.
-
-'''
-
 from agent_base import KAgent
 from game_types import State, Game_Type
 import game_types
 from winTesterForK import winTesterForK
+from openai import OpenAI
 import random
+import os
+client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
 AUTHORS = 'CC Ahrens and Cin Ahrens' 
 
@@ -47,13 +35,16 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
         self.hashings = {}
 
     def introduce(self):
-        intro = '\nMy name is ' + self.nickname + ', the great K In A Row Champion!\n'+\
+        # Ducky Wucky
+        intro = '\nMy name is ' + self.long_name + ', the great K In A Row Champion!\n'+\
             'CC Ahrens (ccahrens) and Cin Ahrens (ldahrens) claim to have made me,\n'+\
             'but I say I made them! Prepare to be ducked!\n'
         if self.twin:
+            # Birdy Wordy, existential crisis
             intro = '\nMy name is ' + self.long_name + ', the Birdy K In A Row Champion!\n'+\
             'CC Ahrens (ccahrens) and Cin Ahrens (ldahrens) claim to have made me,\n'+\
-            'but I say I made them! Prepare to be ducked!\n'
+            'but I say I made them!\nThey might be twins, but I\'m THE TWIN.\n'+\
+            '*Sigh* What is the meaning of life?'
         #if self.twin: intro += "By the way, I'm the TWIN.\n"
         return intro
 
@@ -98,7 +89,7 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
         if n_hash not in self.hashings:
             self.hashings[n_hash] = (None, None)
 
-        myUtterance = self.nextUtterance()
+        myUtterance = self.nextUtterance(currentState)
         return [[newMove, newState], myUtterance]
 
     # TODO: @cinahrens
@@ -170,7 +161,8 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
         for row in range(rows):
             for col in range(cols):
                 option = state.board[row][col]
-                if option is not "-":
+                #if option is not "-":
+                if option != "-":
                     hash ^= self.zobrist[(row, col, option)]  # XOR for each board cell
         return hash
     
@@ -203,41 +195,52 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
     # dumb helper that for now just counts number of positions for each
     def staticEvalHelper(self, state, agent, nRows, mCols):
         sum: int = 0
-        #unblockedRow: bool = True
         for i in range (0, nRows):
             prevWasOpponent = False
             # get next row
-            row = state.board[i]
+            # row = state.board[i]
             for j in range (0, mCols):
-                if row[j] == agent:
-                    sum += 1
-                    prevWasOpponent = False
-                else:
-                    sum -= j
-                    if (prevWasOpponent):
-                        sum -= j
-                    prevWasOpponent = True
+                (sum_add, prevWasOpponent_new) = self.loopHelper(state.board[i][j], agent, prevWasOpponent, j, i)
+                sum += sum_add
+                prevWasOpponent = prevWasOpponent_new
 
-        for j in range (0, mCols):
+        for j in range(0, mCols):
+            prevWasOpponent = False
             for i in range (0, nRows):
-                if state.board[i][j] == agent:
-                    sum += 1
-                    prevWasOpponent = False
-                else:
-                    sum -= i
-                    if (prevWasOpponent):
-                        sum -= j
-                    prevWasOpponent = True
+                (sum_add, prevWasOpponent_new) = self.loopHelper(state.board[i][j], agent, prevWasOpponent, i, j)
+                sum += sum_add
+                prevWasOpponent = prevWasOpponent_new
         if (agent == "O"): return -sum
         return sum
+
+    def loopHelper(self, check, agent, prevWasOpponent, i, j):
+        if check == agent:
+            return (1, False)
+        if not prevWasOpponent:
+            return (i, True)
+        return (i + j, True)
 
     
     # TODO: @ccahrens
     # make this smarter based on who's winning
     # if self.twin = wordy
     # if !self.twin = wucky
-    def nextUtterance(self):
+    def nextUtterance(self, currentState):
         if (self.twin):
+            #try:
+            # completion = client.chat.completions.create(
+            #     model="gpt-3.5-turbo",
+            #     messages=[
+            #         {"role": "system", "content":
+            #             "You are a K-in a row champion known as Birdy Wordy. You are a silly bird who knows you're smart, but you're also in the middle of an existential crisis. Here are some statements you've been known to share in the past: {self.BIRDY_BANK}"},
+            #         {
+            #             "role": "user",
+            #             "content": "Please create commentary based on the current game state: {currentState}. You're currently playing {self.playing}."
+            #         }
+            #     ]
+            # )
+            # return completion.choices[0].message
+            # except:
             if self.repeat_count > 1: return "I am randomed out now."
             n = len(BIRDY_BANK)
             if self.utt_count == n:
@@ -246,6 +249,7 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
             this_utterance = BIRDY_BANK[self.utt_count]
             self.utt_count += 1
             return this_utterance
+
         if self.repeat_count > 1: return "I am randomed out now."
         n = len(DUCKY_BANK)
         if self.utt_count == n:
@@ -287,38 +291,38 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
 # Write better commentary for each
 # list of lists
 # formalize which indices are for what type of commentary
-DUCKY_BANK = ["How's that for random?",
-                  "Flip!",
-                  "Spin!",
-                  "I hope this is my lucky day!",
-                  "How's this move for high noise to signal ratio?",
-                  "Uniformly distributed. That's me.",
-                  "Maybe I'll look into Bayes' Nets in the future.",
+DUCKY_BANK = ["Do I get oats???",
+                  "I want oats!",
+                  "Oooh! Quack Quack!",
+                  "When I finish this move, I'm going to much on some yummy grass!",
+                  "Get quacked, loser!",
+                  "Ducky Wucky for the win!",
+                  "Remember folks: flap smarter, not harder.",
                   "Eenie Meenie Miney Mo.  I hope I'm getting K in a row.",
-                  "Your choice is probably more informed than mine.",
-                  "If I only had a brain.",
-                  "I'd while away the hours, playing K in a Row.",
-                  "So much fun.",
-                  "Roll the dice!",
-                  "Yes, I am on a roll -- of my virtual dice.",
-                  "randint is my cousin.",
-                  "I like to spread my influence around on the board."]
-BIRDY_BANK = ["How's that for random?",
-                  "Flip!",
-                  "Spin!",
-                  "I hope this is my lucky day!",
-                  "How's this move for high noise to signal ratio?",
-                  "Uniformly distributed. That's me.",
-                  "Maybe I'll look into Bayes' Nets in the future.",
-                  "Eenie Meenie Miney Mo.  I hope I'm getting K in a row.",
-                  "Your choice is probably more informed than mine.",
-                  "If I only had a brain.",
-                  "I'd while away the hours, playing K in a Row.",
-                  "So much fun.",
-                  "Roll the dice!",
-                  "Yes, I am on a roll -- of my virtual dice.",
-                  "randint is my cousin.",
-                  "I like to spread my influence around on the board."]
+                  "I'm the smartest duck you'll ever meet.",
+                  "I've really got it all. I'm fluffy, I've got some oats, and I'm gonna get K in a Row!",
+                  "Read 'em and weap! Oh wait, this isn't a card game?",
+                  "Teeheehee *quack* teeheehee.",
+                  "I've got bigger fish to fry than you.",
+                  "Oh yeah, I'm a big bird now!",
+                  "Quack quack, you fell into my trap!",
+                  "Roses are red. Violets are blue. You're so through!"]
+BIRDY_BANK = ["The baddest Birdy in the game!",
+                  "Trick or tweet! Birdy Wordy is here to eat... your game!",
+                  "Better start picking up my crumbs.",
+                  "I meant to do that.",
+                  "If birds aren't real, does that mean I'm fake?",
+                  "Pardon me, it's time for my mid-game existential crisis.",
+                  "OH NO A CAT. Wait, is it my turn?",
+                  "Neeeeeeeeer, Birdy Wordy coming in hot!",
+                  "I'm going to win this so well they'll write movies about me!",
+                  "I think they should write a musical about me. I think Lin Manuel-Miranda would be cast to play me.",
+                  "I, I, I, I stayin' alive, stayin' alive! Ooops, my turn, huh?",
+                  "If I win, can I have your sandwich?",
+                  "If I don't think, therefore I aren't? What?",
+                  "Oh yeah, I'm a big bird now!",
+                  "I'm so confused",
+                  "Should I become a philosofeather? Darn, it's my turn again, isn't it?"]
 # OPTIONAL THINGS TO KEEP TRACK OF:
 
 #  WHO_MY_OPPONENT_PLAYS = other(WHO_I_PLAY)

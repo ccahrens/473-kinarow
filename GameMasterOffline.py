@@ -213,9 +213,10 @@ def ccTestMany():
     we_win_ttt = 0
     import ccahrens_KInARow as h
     import RandomPlayer as m
+    runs = 100
 
     # run games with our agent as x
-    for i in range (0, 1000):
+    for i in range (0, runs):
         px = h.OurAgent()
         po = m.OurAgent()
         set_players(px, po)
@@ -226,7 +227,7 @@ def ccTestMany():
             else:
                 opponent_wins_ttt += 1
     # run games with our agent as O
-    for i in range (0, 1000):
+    for i in range (0, runs):
         po = h.OurAgent()
         px = m.OurAgent()
         set_players(px, po)
@@ -242,7 +243,7 @@ def ccTestMany():
     opponent_wins_fiar = 0
     we_win_fiar = 0
     # run games with our agent as X
-    for i in range (0, 1000):
+    for i in range (0, runs):
         px = h.OurAgent()
         po = m.OurAgent()
         set_players(px, po)
@@ -253,7 +254,7 @@ def ccTestMany():
             else:
                 opponent_wins_fiar += 1
     # run games with our agent as O
-    for i in range (0, 1000):
+    for i in range (0, runs):
         po = h.OurAgent()
         px = m.OurAgent()
         set_players(px, po)
@@ -269,7 +270,7 @@ def ccTestMany():
     opponent_wins_cassini = 0
     we_win_cassini = 0
     # run games with our agent as X
-    for i in range (0, 1000):
+    for i in range (0, runs):
         px = h.OurAgent()
         po = m.OurAgent()
         set_players(px, po)
@@ -280,7 +281,7 @@ def ccTestMany():
             else:
                 opponent_wins_cassini += 1
     # run games with our agent as O
-    for i in range (0, 1000):
+    for i in range (0, runs):
         po = h.OurAgent()
         px = m.OurAgent()
         set_players(px, po)
@@ -312,21 +313,37 @@ def ccTestMany():
     print(f"our win rate: {100*we_win_cassini/(opponent_wins_cassini + we_win_cassini)}%")
 
 
-# win rates as of Thursday, November 21, 2024
-# ***TTT RESULTS***
-# opponent wins: 1134
-# our wins: 768
-# our win rate: 40.37854889589905%
+        # win rates as of Thursday, November 21, 2024
+        # ***TTT RESULTS***
+        # opponent wins: 1134
+        # our wins: 768
+        # our win rate: 40.37854889589905%
 
-# ***FIAR RESULTS***
-# opponent wins: 714
-# our wins: 1232
-# our win rate: 63.30935251798561%
+        # ***FIAR RESULTS***
+        # opponent wins: 714
+        # our wins: 1232
+        # our win rate: 63.30935251798561%
 
-# ***CASSINI RESULTS***
-# opponent wins: 583
-# our wins: 1125
-# our win rate: 65.86651053864169%
+        # ***CASSINI RESULTS***
+        # opponent wins: 583
+        # our wins: 1125
+        # our win rate: 65.86651053864169%
+
+        # win rates as of Saturday, November 23, 2024
+        # ***TTT RESULTS***
+        # opponent wins: 6
+        # our wins: 13
+        # our win rate: 68.42105263157895%
+
+        # ***FIAR RESULTS***
+        # opponent wins: 2
+        # our wins: 18
+        # our win rate: 90.0%
+
+        # ***CASSINI RESULTS***
+        # opponent wins: 1
+        # our wins: 19
+        # our win rate: 95.0%
 
 def cinTestMany():
     # Stand-alone test
@@ -344,7 +361,7 @@ def cinTestMany():
     static_eval_accesses = 0
     import ccahrens_KInARow as h
     import RandomPlayer as m
-    num_matched = 1000
+    num_matched = 10
 
     # run games with our agent as x
     print("Starting TTT X games...")
@@ -487,7 +504,28 @@ def cinTestMany():
     # ***STATIC EVAL ACCESSES***
     # static eval accesses: 21277103
 
+def testDialogue():
+    # Stand-alone test
+    print("Starting stand-alone test of GameMaster.py")
+    # Edit this to change what version of K-in-a-Row is used.
+    set_game(FIAR) # default is Tic-Tac-Toe
+    #set_game(FIAR) # Five in a Row
+    # Import 1 or 2 agent files here.
+    # If using only 1, create 2 instances of it, one of
+    # which is a "twin".
+
+    import ccahrens_KInARow as h
+    # import ccahrens_KInARow as m
+    #import RandomPlayer as m
+    px = h.OurAgent()
+    po = h.OurAgent(twin=True)
+    set_players(px, po)
+    print("Players are set.")
+    print("Now let's run the game.")
+    runGame()
+    print("X accesses: ", px.eval_calls)
+    print("O accesses: ", po.eval_calls)
 
 if __name__ == '__main__':
-    test()
+    testDialogue()
     
