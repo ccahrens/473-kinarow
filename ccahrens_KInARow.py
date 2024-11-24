@@ -36,7 +36,7 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
 
     def introduce(self):
         # Ducky Wucky
-        intro = '\nMy name is ' + self.long_name + ', the great K In A Row Champion!\n'+\
+        intro = '\nMy name is ' + self.long_name + ', also known as ' + self.nickname + ' and I\'m the great K In A Row Champion!\n'+\
             'CC Ahrens (ccahrens) and Cin Ahrens (ldahrens) claim to have made me,\n'+\
             'but I say I made them! Prepare to be ducked!\n'
         if self.twin:
