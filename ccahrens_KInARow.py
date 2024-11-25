@@ -117,7 +117,7 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
         if n_hash not in self.hashings:
             self.hashings[n_hash] = (None, None)
 
-        myUtterance = self.nextUtterance(currentState)
+        myUtterance = self.nextUtterance(currentState, currentRemark)
         return [[newMove, newState], myUtterance]
 
     # TODO: @cinahrens
@@ -244,14 +244,16 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
         return (i + j, True)
 
     
-    def nextUtterance(self, currentState):
+    def nextUtterance(self, currentState, currentRemark):
         # this method uses try/except since part way through the game, gemini stops responding as well and
         # frequently throws errors, so when this happens, we default to our deterministic responses
 
         # base prompt that is the same for both personas
         prompt = "The current game state is" + currentState.__str__() + "."
-        prompt += "Please provide a one sentence response without mentioning your next move."
-        prompt += "Take inspiration from previous statements you've made!"
+        if (currentRemark != "The game is starting."):
+            prompt += " Your opponent recently made a move and said, '" + currentRemark + "'."
+        prompt += " Please provide a one sentence response without mentioning your next move and consider your opponent's remark."
+        prompt += " Take inspiration from previous statements you've made!"
 
         if (self.twin):
             prompt += "Get creative, and don't forget your existentialist and philosophical roots!"
