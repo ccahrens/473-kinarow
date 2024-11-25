@@ -1,0 +1,36 @@
+win rates as of Thursday, November 21, 2024 (2000 runs per game)
+***TTT RESULTS***
+opponent wins: 1134
+our wins: 768
+our win rate: 40.37854889589905%
+
+***FIAR RESULTS***
+opponent wins: 714
+our wins: 1232
+our win rate: 63.30935251798561%
+
+***CASSINI RESULTS***
+opponent wins: 583
+our wins: 1125
+our win rate: 65.86651053864169%
+
+
+
+win rates as of Sunday, November 24, 2024 (200 runs per game)
+***TTT RESULTS***
+opponent wins: 68
+our wins: 125
+our win rate: 64.76683937823834%
+
+***FIAR RESULTS***
+opponent wins: 12
+our wins: 188
+our win rate: 94.0%
+
+***CASSINI RESULTS***
+opponent wins: 12
+our wins: 187
+our win rate: 93.96984924623115%
+
+***STATIC EVAL ACCESSES***
+static eval accesses: 3444

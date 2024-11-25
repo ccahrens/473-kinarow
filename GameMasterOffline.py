@@ -299,63 +299,23 @@ def ccTestMany(runs=10, ai=False):
             else:
                 opponent_wins_cassini += 1
         static_eval_accesses += po.eval_calls
-    
 
     # display results
-    print()
-    print("***TTT RESULTS***")
-    print(f"opponent wins: {opponent_wins_ttt}")
-    print(f"our wins: {we_win_ttt}")
-    print(f"our win rate: {100* we_win_ttt/(opponent_wins_ttt + we_win_ttt)}%")
-
-    print()
-    print("***FIAR RESULTS***")
-    print(f"opponent wins: {opponent_wins_fiar}")
-    print(f"our wins: {we_win_fiar}")
-    print(f"our win rate: {100* we_win_fiar/(opponent_wins_fiar + we_win_fiar)}%")
-
-    print()
-    print("***CASSINI RESULTS***")
-    print(f"opponent wins: {opponent_wins_cassini}")
-    print(f"our wins: {we_win_cassini}")
-    print(f"our win rate: {100*we_win_cassini/(opponent_wins_cassini + we_win_cassini)}%")
+    showResults("TTT", opponent_wins_ttt, we_win_ttt, runs*2)
+    showResults("FIAR", opponent_wins_fiar, we_win_fiar, runs*2)
+    showResults("CASSINI", opponent_wins_cassini, we_win_cassini, runs*2)
 
     print()
     print("***STATIC EVAL ACCESSES***")
     print(f"static eval accesses: {static_eval_accesses}")
 
-
-        # win rates as of Thursday, November 21, 2024
-        # ***TTT RESULTS***
-        # opponent wins: 1134
-        # our wins: 768
-        # our win rate: 40.37854889589905%
-
-        # ***FIAR RESULTS***
-        # opponent wins: 714
-        # our wins: 1232
-        # our win rate: 63.30935251798561%
-
-        # ***CASSINI RESULTS***
-        # opponent wins: 583
-        # our wins: 1125
-        # our win rate: 65.86651053864169%
-
-        # win rates as of Saturday, November 23, 2024
-        # ***TTT RESULTS***
-        # opponent wins: 6
-        # our wins: 13
-        # our win rate: 68.42105263157895%
-
-        # ***FIAR RESULTS***
-        # opponent wins: 2
-        # our wins: 18
-        # our win rate: 90.0%
-
-        # ***CASSINI RESULTS***
-        # opponent wins: 1
-        # our wins: 19
-        # our win rate: 95.0%
+def showResults(game: str, opponent_wins: int, our_wins: int, runs: int):
+    print()
+    print(f"***{game} RESULTS***")
+    print(f"opponent wins: {opponent_wins}")
+    print(f"our wins: {our_wins}")
+    print(f"our win rate (excludes ties from total): {100*our_wins/(opponent_wins + our_wins)}")
+    print(f"our win rate (counts ties as losses): {100*our_wins/runs}")
 
 def cinTestMany():
     # Stand-alone test
@@ -517,18 +477,9 @@ def cinTestMany():
     # static eval accesses: 21277103
 
 def testDialogue(game=FIAR, ai=True):
-    # Stand-alone test
-    print("Starting testDialogue()")
-    # Edit this to change what version of K-in-a-Row is used.
-    set_game(game) # default is Tic-Tac-Toe
-    #set_game(FIAR) # Five in a Row
-    # Import 1 or 2 agent files here.
-    # If using only 1, create 2 instances of it, one of
-    # which is a "twin".
-
     import ccahrens_KInARow as h
-    # import ccahrens_KInARow as m
-    #import RandomPlayer as m
+    print("Starting testDialogue()")
+    set_game(game)
     px = h.OurAgent(ai=ai)
     po = h.OurAgent(twin=True, ai=ai)
     set_players(px, po)
@@ -539,5 +490,5 @@ def testDialogue(game=FIAR, ai=True):
     print("O accesses: ", po.eval_calls)
 
 if __name__ == '__main__':
-    ccTestMany(runs=100, ai=True)
+    ccTestMany(runs=1000, ai=False)
     
