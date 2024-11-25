@@ -2,10 +2,7 @@ from agent_base import KAgent
 from game_types import State, Game_Type
 import game_types
 from winTesterForK import winTesterForK
-from openai import OpenAI
 import random
-import os
-client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
 AUTHORS = 'CC Ahrens and Cin Ahrens' 
 
@@ -227,20 +224,6 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
     # if !self.twin = wucky
     def nextUtterance(self, currentState):
         if (self.twin):
-            #try:
-            # completion = client.chat.completions.create(
-            #     model="gpt-3.5-turbo",
-            #     messages=[
-            #         {"role": "system", "content":
-            #             "You are a K-in a row champion known as Birdy Wordy. You are a silly bird who knows you're smart, but you're also in the middle of an existential crisis. Here are some statements you've been known to share in the past: {self.BIRDY_BANK}"},
-            #         {
-            #             "role": "user",
-            #             "content": "Please create commentary based on the current game state: {currentState}. You're currently playing {self.playing}."
-            #         }
-            #     ]
-            # )
-            # return completion.choices[0].message
-            # except:
             if self.repeat_count > 1: return "I am randomed out now."
             n = len(BIRDY_BANK)
             if self.utt_count == n:
