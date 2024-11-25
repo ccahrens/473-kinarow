@@ -200,7 +200,7 @@ def test():
 
 def ccTestMany():
     # Stand-alone test
-    print("Starting stand-alone test of GameMaster.py")
+    print("Starting ccTestMany()")
     # Edit this to change what version of K-in-a-Row is used.
     set_game(TTT) # default is Tic-Tac-Toe
     #set_game(FIAR) # Five in a Row
@@ -506,7 +506,7 @@ def cinTestMany():
 
 def testDialogue():
     # Stand-alone test
-    print("Starting stand-alone test of GameMaster.py")
+    print("Starting testDialogue()")
     # Edit this to change what version of K-in-a-Row is used.
     set_game(FIAR) # default is Tic-Tac-Toe
     #set_game(FIAR) # Five in a Row
