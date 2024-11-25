@@ -16,7 +16,7 @@ import time # You'll probably need this to avoid losing a
 class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
     # knows how to instantiate your agent class.
 
-    def __init__(self, twin=False):
+    def __init__(self, twin=False, ai=True):
         self.twin=twin
         if self.twin:
             self.nickname = 'Birdy Wordy'
@@ -36,8 +36,10 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
         self.eval_calls = 0
         self.zobrist = []
         self.hashings = {}
-        genai.configure(api_key="AIzaSyDWhKiqG2rO8vZhW7cCD8LluN4Q_Of8pck")
-        self.model = genai.GenerativeModel("gemini-1.5-flash")
+        self.ai = ai
+        if (self.ai):
+            genai.configure(api_key="AIzaSyDWhKiqG2rO8vZhW7cCD8LluN4Q_Of8pck")
+            self.model = genai.GenerativeModel("gemini-1.5-flash")
 
     def introduce(self):
         # Ducky Wucky
@@ -73,43 +75,44 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
         self.time_limit = expected_time_per_move
         global GAME_TYPE
         GAME_TYPE = game_type
-        print("Oh, I love playing Duck Duck ", game_type.long_name)
         if self.twin: self.utt_count = 5 # Offset the twin's utterances.
         self.zobrist = self.build_table(game_type.n, game_type.m)
+
         if self.twin:
-            prompt = "You are a bird named " + self.long_name + " but you go by " + self.nickname + "."
-            prompt += " You are in the middle of an existential crisis, and you're playing a game of"
-            prompt += " K in a Row, and you'll be placing" + what_side_to_play + " to score points."
-            prompt += " In past games, you have been known to say things such as those contained in "
-            prompt += "the following list: " + ', '.join(BIRDY_BANK) + "."
-            self.chat = self.model.start_chat(
+            print("Ah! A game of " + game_type.long_name + ". I'm intrigued!")
+            if self.ai:
+                prompt = "You are a bird named " + self.long_name + " but you go by " + self.nickname + "."
+                prompt += " You are in the middle of an existential crisis, and you're playing a game of"
+                prompt += " K in a Row, and you'll be placing" + what_side_to_play + " to score points."
+                prompt += " In past games, you have been known to say things such as those contained in "
+                prompt += "the following list: " + ', '.join(BIRDY_BANK) + "."
+                self.chat = self.model.start_chat(
+                        history=[
+                            {"role": "user", "parts": prompt},
+                        ]
+                    )
+        else:
+            print("Oh, I love playing Duck Duck ", game_type.long_name)
+            if self.ai:
+                prompt = "You are a duck named " + self.long_name + " and you go by " + self.nickname + ". "
+                prompt += "You are incredibly self-confident and love to make duck jokes. "
+                prompt += "You're currently in the middle of a game of K in a Row, and you'll be placing "
+                prompt += what_side_to_play + " to score points. In past games, you have said things such as: "
+                prompt += ', '.join(DUCKY_BANK) + "."
+                self.chat = self.model.start_chat(
                     history=[
                         {"role": "user", "parts": prompt},
                     ]
                 )
-        else:
-            prompt = "You are a duck named " + self.long_name + " and you go by " + self.nickname + ". "
-            prompt += "You are incredibly self-confident and love to make duck jokes. "
-            prompt += "You're currently in the middle of a game of K in a Row, and you'll be placing "
-            prompt += what_side_to_play + " to score points. In past games, you have said things such as: "
-            prompt += ', '.join(DUCKY_BANK) + "."
-            self.chat = self.model.start_chat(
-                history=[
-                    {"role": "user", "parts": prompt},
-                ]
-            )
-        self.prompt = prompt
+        if self.ai:
+            self.prompt = prompt
         return "OK"
    
     # The core of your agent's ability should be implemented here:             
     def makeMove(self, currentState, currentRemark, timeLimit=10000):
-        print("makeMove has been called")
-
-        print("code to compute a good move should go here.")
-
-        depth_limit = 3
+        depth_limit = 5
         hash = self.hash(currentState)
-        _, newMove, newState = self.minimax(currentState, depth_limit, alpha=float("-inf"), beta=float("inf"), pruning=False, zHashing=hash, x = self.who_i_play == 'X')
+        _, newMove, newState = self.minimax(currentState, depth_limit, alpha=float("-inf"), beta=float("inf"), pruning=True, zHashing=hash, x = self.who_i_play == 'X')
 
         other = self.other(currentState.whose_move)
         n_hash = self.rehash(self.who_i_play, hash, newMove[0], newMove[1])
@@ -205,9 +208,6 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
         self.hashings[hash][depth] = (value, move)
 
     def staticEval(self, state):
-        #print('calling staticEval')
-        # NOTE FROM CIN:
-        # This is for my testing functions, please leave it as is!
         self.eval_calls += 1
         # Values should be higher when the states are better for X,
         # lower when better for O.
@@ -249,47 +249,48 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
         # frequently throws errors, so when this happens, we default to our deterministic responses
 
         # base prompt that is the same for both personas
-        prompt = "The current game state is" + currentState.__str__() + "."
-        if (currentRemark != "The game is starting."):
-            prompt += " Your opponent recently made a move and said, '" + currentRemark + "'."
-        prompt += " Please provide a one sentence response without mentioning your next move and consider your opponent's remark."
-        prompt += " Take inspiration from previous statements you've made!"
+        if self.ai:
+            prompt = "The current game state is: " + currentState.__str__() + "."
+            if (currentRemark != "The game is starting."):
+                prompt += " Your opponent recently made a move and said, '" + currentRemark + "'."
+            prompt += " Please provide a one sentence response without mentioning your next move and consider your opponent's remark."
+            prompt += " Take inspiration from previous statements you've made!"
 
-        if (self.twin):
-            prompt += "Get creative, and don't forget your existentialist and philosophical roots!"
-        else:
-            prompt += "Get creative, arogant, and don't forget your stellar duckiliciousness!"
-        
-        try:
-            response = self.chat.send_message(prompt)
-            return response.text
-
-        except:
-            # restart model for the next time
-            self.model = genai.GenerativeModel("gemini-1.5-flash")
-            self.chat = self.model.start_chat(
-                    history=[
-                        {"role": "user", "parts": self.prompt},
-                    ]
-                )
-            if (self.twin):   
-                if self.repeat_count > 1: return "I am randomed out now."
-                n = len(BIRDY_BANK)
-                if self.utt_count == n:
-                    self.utt_count = 0
-                    self.repeat_count += 1
-                this_utterance = BIRDY_BANK[self.utt_count]
-                self.utt_count += 1
-                return this_utterance
+            if (self.twin):
+                prompt += " Get creative, and don't forget your existentialist and philosophical roots!"
             else:
-                if self.repeat_count > 1: return "I am randomed out now."
-                n = len(DUCKY_BANK)
-                if self.utt_count == n:
-                    self.utt_count = 0
-                    self.repeat_count += 1
-                this_utterance = DUCKY_BANK[self.utt_count]
-                self.utt_count += 1
-                return this_utterance
+                prompt += " Get creative, arogant, and don't forget your stellar duckiliciousness!"
+            
+            try:
+                response = self.chat.send_message(prompt, generation_config=genai.types.GenerationConfig(temperature=1))
+                return response.text
+
+            except:
+            # restart model for the next time
+                self.model = genai.GenerativeModel("gemini-1.5-flash")
+                self.chat = self.model.start_chat(
+                        history=[
+                            {"role": "user", "parts": self.prompt},
+                        ]
+                    )
+        if (self.twin):   
+            if self.repeat_count > 1: return "I am randomed out now."
+            n = len(BIRDY_BANK)
+            if self.utt_count == n:
+                self.utt_count = 0
+                self.repeat_count += 1
+            this_utterance = BIRDY_BANK[self.utt_count]
+            self.utt_count += 1
+            return this_utterance
+        else:
+            if self.repeat_count > 1: return "I am randomed out now."
+            n = len(DUCKY_BANK)
+            if self.utt_count == n:
+                self.utt_count = 0
+                self.repeat_count += 1
+            this_utterance = DUCKY_BANK[self.utt_count]
+            self.utt_count += 1
+            return this_utterance
     
 
     def other(self, p):

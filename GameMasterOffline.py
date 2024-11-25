@@ -198,7 +198,7 @@ def test():
     print("X accesses: ", px.eval_calls)
     print("O accesses: ", po.eval_calls)
 
-def ccTestMany():
+def ccTestMany(runs=10, ai=False):
     # Stand-alone test
     print("Starting ccTestMany()")
     # Edit this to change what version of K-in-a-Row is used.
@@ -213,11 +213,12 @@ def ccTestMany():
     we_win_ttt = 0
     import ccahrens_KInARow as h
     import RandomPlayer as m
-    runs = 100
+
+    static_eval_accesses = 0
 
     # run games with our agent as x
     for i in range (0, runs):
-        px = h.OurAgent()
+        px = h.OurAgent(ai=ai)
         po = m.OurAgent()
         set_players(px, po)
         res = runGame()
@@ -226,9 +227,10 @@ def ccTestMany():
                 we_win_ttt += 1
             else:
                 opponent_wins_ttt += 1
+        static_eval_accesses += px.eval_calls
     # run games with our agent as O
     for i in range (0, runs):
-        po = h.OurAgent()
+        po = h.OurAgent(ai=ai)
         px = m.OurAgent()
         set_players(px, po)
         res = runGame()
@@ -237,6 +239,7 @@ def ccTestMany():
                 we_win_ttt += 1
             else:
                 opponent_wins_ttt += 1
+        static_eval_accesses += po.eval_calls
 
     # set up for FIAR
     set_game(FIAR)
@@ -244,7 +247,7 @@ def ccTestMany():
     we_win_fiar = 0
     # run games with our agent as X
     for i in range (0, runs):
-        px = h.OurAgent()
+        px = h.OurAgent(ai=ai)
         po = m.OurAgent()
         set_players(px, po)
         res = runGame()
@@ -253,9 +256,11 @@ def ccTestMany():
                 we_win_fiar += 1
             else:
                 opponent_wins_fiar += 1
+        static_eval_accesses += px.eval_calls
+
     # run games with our agent as O
     for i in range (0, runs):
-        po = h.OurAgent()
+        po = h.OurAgent(ai=ai)
         px = m.OurAgent()
         set_players(px, po)
         res = runGame()
@@ -264,6 +269,7 @@ def ccTestMany():
                 we_win_fiar += 1
             else:
                 opponent_wins_fiar += 1
+        static_eval_accesses += po.eval_calls
 
     # set up for cassini
     set_game(Cassini)
@@ -271,7 +277,7 @@ def ccTestMany():
     we_win_cassini = 0
     # run games with our agent as X
     for i in range (0, runs):
-        px = h.OurAgent()
+        px = h.OurAgent(ai=ai)
         po = m.OurAgent()
         set_players(px, po)
         res = runGame()
@@ -280,9 +286,10 @@ def ccTestMany():
                 we_win_cassini += 1
             else:
                 opponent_wins_cassini += 1
+        static_eval_accesses += px.eval_calls
     # run games with our agent as O
     for i in range (0, runs):
-        po = h.OurAgent()
+        po = h.OurAgent(ai=ai)
         px = m.OurAgent()
         set_players(px, po)
         res = runGame()
@@ -291,6 +298,7 @@ def ccTestMany():
                 we_win_cassini += 1
             else:
                 opponent_wins_cassini += 1
+        static_eval_accesses += po.eval_calls
     
 
     # display results
@@ -311,6 +319,10 @@ def ccTestMany():
     print(f"opponent wins: {opponent_wins_cassini}")
     print(f"our wins: {we_win_cassini}")
     print(f"our win rate: {100*we_win_cassini/(opponent_wins_cassini + we_win_cassini)}%")
+
+    print()
+    print("***STATIC EVAL ACCESSES***")
+    print(f"static eval accesses: {static_eval_accesses}")
 
 
         # win rates as of Thursday, November 21, 2024
@@ -504,11 +516,11 @@ def cinTestMany():
     # ***STATIC EVAL ACCESSES***
     # static eval accesses: 21277103
 
-def testDialogue():
+def testDialogue(game=FIAR, ai=True):
     # Stand-alone test
     print("Starting testDialogue()")
     # Edit this to change what version of K-in-a-Row is used.
-    set_game(FIAR) # default is Tic-Tac-Toe
+    set_game(game) # default is Tic-Tac-Toe
     #set_game(FIAR) # Five in a Row
     # Import 1 or 2 agent files here.
     # If using only 1, create 2 instances of it, one of
@@ -517,8 +529,8 @@ def testDialogue():
     import ccahrens_KInARow as h
     # import ccahrens_KInARow as m
     #import RandomPlayer as m
-    px = h.OurAgent()
-    po = h.OurAgent(twin=True)
+    px = h.OurAgent(ai=ai)
+    po = h.OurAgent(twin=True, ai=ai)
     set_players(px, po)
     print("Players are set.")
     print("Now let's run the game.")
@@ -527,5 +539,5 @@ def testDialogue():
     print("O accesses: ", po.eval_calls)
 
 if __name__ == '__main__':
-    testDialogue()
+    ccTestMany(runs=100, ai=True)
     
