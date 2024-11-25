@@ -215,6 +215,12 @@ def ccTestMany(runs=10, ai=False):
     import RandomPlayer as m
 
     static_eval_accesses = 0
+    ttt_evals_x = 0
+    ttt_evals_o = 0
+    fiar_evals_x = 0
+    fiar_evals_o = 0
+    cassini_evals_x = 0
+    cassini_evals_o = 0
 
     # run games with our agent as x
     for i in range (0, runs):
@@ -227,6 +233,7 @@ def ccTestMany(runs=10, ai=False):
                 we_win_ttt += 1
             else:
                 opponent_wins_ttt += 1
+        ttt_evals_x += px.eval_calls
         static_eval_accesses += px.eval_calls
     # run games with our agent as O
     for i in range (0, runs):
@@ -239,6 +246,7 @@ def ccTestMany(runs=10, ai=False):
                 we_win_ttt += 1
             else:
                 opponent_wins_ttt += 1
+        ttt_evals_o += po.eval_calls
         static_eval_accesses += po.eval_calls
 
     # set up for FIAR
@@ -256,6 +264,7 @@ def ccTestMany(runs=10, ai=False):
                 we_win_fiar += 1
             else:
                 opponent_wins_fiar += 1
+        fiar_evals_x += px.eval_calls
         static_eval_accesses += px.eval_calls
 
     # run games with our agent as O
@@ -269,6 +278,7 @@ def ccTestMany(runs=10, ai=False):
                 we_win_fiar += 1
             else:
                 opponent_wins_fiar += 1
+        fiar_evals_o += po.eval_calls
         static_eval_accesses += po.eval_calls
 
     # set up for cassini
@@ -286,6 +296,7 @@ def ccTestMany(runs=10, ai=False):
                 we_win_cassini += 1
             else:
                 opponent_wins_cassini += 1
+        cassini_evals_x += px.eval_calls
         static_eval_accesses += px.eval_calls
     # run games with our agent as O
     for i in range (0, runs):
@@ -298,6 +309,7 @@ def ccTestMany(runs=10, ai=False):
                 we_win_cassini += 1
             else:
                 opponent_wins_cassini += 1
+        cassini_evals_o += po.eval_calls
         static_eval_accesses += po.eval_calls
 
     # display results
@@ -308,6 +320,13 @@ def ccTestMany(runs=10, ai=False):
     print()
     print("***STATIC EVAL ACCESSES***")
     print(f"static eval accesses: {static_eval_accesses}")
+    print(f"static evals ttt x: {ttt_evals_x}")
+    print(f"static evals ttt o: {ttt_evals_o}")
+    print(f"static evals fiar x: {fiar_evals_x}")
+    print(f"static evals fiar o: {fiar_evals_o}")
+    print(f"static evals cassini x: {cassini_evals_x}")
+    print(f"static evals cassini o: {cassini_evals_o}")
+    
 
 def showResults(game: str, opponent_wins: int, our_wins: int, runs: int):
     print()
@@ -490,5 +509,5 @@ def testDialogue(game=FIAR, ai=True):
     print("O accesses: ", po.eval_calls)
 
 if __name__ == '__main__':
-    ccTestMany(runs=1000, ai=False)
+    ccTestMany(runs=1, ai=False)
     
