@@ -3,7 +3,6 @@ from game_types import State, Game_Type
 import game_types
 from winTesterForK import winTesterForK
 import random
-import google.generativeai as genai
 import os
 
 AUTHORS = 'CC Ahrens and Cin Ahrens' 
@@ -38,8 +37,12 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
         self.hashings = {}
         self.ai = ai
         if (self.ai):
-            genai.configure(api_key="AIzaSyDWhKiqG2rO8vZhW7cCD8LluN4Q_Of8pck")
-            self.model = genai.GenerativeModel("gemini-1.5-flash")
+            try:
+                import google.generativeai as genai
+                genai.configure(api_key="AIzaSyDWhKiqG2rO8vZhW7cCD8LluN4Q_Of8pck")
+                self.model = genai.GenerativeModel("gemini-1.5-flash")
+            except:
+                self.ai = False
 
     def introduce(self):
         # Ducky Wucky
