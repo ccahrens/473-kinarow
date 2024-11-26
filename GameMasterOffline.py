@@ -213,7 +213,10 @@ def ccTestMany(runs=10, ai=False):
     opponent_wins_ttt = 0
     we_win_ttt = 0
     import ccahrens_KInARow as h
-    import tonyji_KInARow as m
+    try:
+        import tonyji_KInARow as m
+    except:
+        import RandomPlayer as m
 
     static_eval_accesses = 0
     ttt_evals_x = 0
