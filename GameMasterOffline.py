@@ -458,23 +458,6 @@ def cinTestMany(runs=10, ai=False):
     showResults("TTT", opponent_wins_ttt, we_win_ttt, num_matched*2)
     showResults("FIAR", opponent_wins_fiar, we_win_fiar, num_matched*2)
     showResults("CASSINI", opponent_wins_cassini, we_win_cassini, num_matched*2)
-    print()
-    print("***TTT RESULTS***")
-    print(f"opponent wins: {opponent_wins_ttt}")
-    print(f"our wins: {we_win_ttt}")
-    print(f"our win rate: {100* we_win_ttt/(opponent_wins_ttt + we_win_ttt)}%")
-
-    print()
-    print("***FIAR RESULTS***")
-    print(f"opponent wins: {opponent_wins_fiar}")
-    print(f"our wins: {we_win_fiar}")
-    print(f"our win rate: {100* we_win_fiar/(opponent_wins_fiar + we_win_fiar)}%")
-
-    print()
-    print("***CASSINI RESULTS***")
-    print(f"opponent wins: {opponent_wins_cassini}")
-    print(f"our wins: {we_win_cassini}")
-    print(f"our win rate: {100*we_win_cassini/(opponent_wins_cassini + we_win_cassini)}%")
 
     print()
     print("***STATIC EVAL ACCESSES***")
