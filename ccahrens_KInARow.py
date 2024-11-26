@@ -217,6 +217,7 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
         k: int = GAME_TYPE.k
         return (int)(self.who_i_play == "X")*self.staticEvalHelper(state, n, m, k)
 
+    # helper function to handle evaluation of states
     def staticEvalHelper(self, state, n: int, m: int, k: int):
         score: int = 0
         ourStreak: int = 0
@@ -230,12 +231,15 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
         print(midN)
         print(midM)
         print(state.board[midN][midM])
+
+        # if we're contemplating our first turn, we want to try to play
+        # the middle square if at all possible!
         if wasFirstTurn and state.board[midN][midM] == self.who_i_play:
             print("yup")
             self.first_turn = False
             return 10000*k
 
-        # look at columns
+        # investigate our status in columns
         for i in range (0, n):
             for j in range (0, m):
                 score, ourStreak, maxStreak, opponentStream = self.evaluateSquare(
@@ -243,7 +247,7 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
                     )
                 if score == abs(1000*k):
                     return score
-        # look at rows
+        # investigate our status in rows
         for j in range(0, m):
             ourStreak = 0
             opponentStreak = 0
@@ -261,6 +265,7 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
         diagonals.extend(np_board.diagonal(i) for i in range(a - 1,-1*a,-1))
         for i in range(len(diagonals)):
             if (not isinstance(diagonals[i], str) and diagonals[i].size >= k) or k == 1:
+                # only consider diagonals that are the correct length
                 ourStreak = 0
                 opponentStreak = 0
                 prevWasOpponent = False
@@ -273,6 +278,10 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
 
         return score*maxStreak
 
+    # helper function to evaluate a particular square during statEvalHelper's run
+    # takes a specific square on the board, our current streak, the max streak we've seen,
+    # our opponent's streak currently, and how many in a row we need to win
+    # returns the updated score, ourStreak, maxStreak, and opponentStreak
     def evaluateSquare(self, square, score, ourStreak, maxStreak, opponentStreak, k):
         if self.who_i_play == square:
             ourStreak += 1
