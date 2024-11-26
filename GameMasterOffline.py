@@ -179,14 +179,15 @@ def test():
     # Stand-alone test
     print("Starting stand-alone test of GameMaster.py")
     # Edit this to change what version of K-in-a-Row is used.
-    set_game(TTT) # default is Tic-Tac-Toe
+    set_game(FIAR) # default is Tic-Tac-Toe
     #set_game(FIAR) # Five in a Row
     # Import 1 or 2 agent files here.
     # If using only 1, create 2 instances of it, one of
     # which is a "twin".
 
     import ccahrens_KInARow as h
-    import ccahrens_KInARow as m
+    #import ccahrens_KInARow as m
+    import tony_KInARow as m
     #import RandomPlayer as m
     px = h.OurAgent()
     # po = h.OurAgent(twin=True)
@@ -509,5 +510,6 @@ def testDialogue(game=FIAR, ai=True):
     print("O accesses: ", po.eval_calls)
 
 if __name__ == '__main__':
-    ccTestMany(runs=1, ai=False)
+    #ccTestMany(runs=1, ai=False)
+    test()
     
