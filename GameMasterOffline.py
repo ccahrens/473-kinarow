@@ -509,7 +509,11 @@ def testDialogue(game=FIAR, ai=True):
     print("X accesses: ", px.eval_calls)
     print("O accesses: ", po.eval_calls)
 
+import sys
 if __name__ == '__main__':
-    #ccTestMany(runs=1, ai=False)
-    test()
+    runs: int = 10
+    if sys.argv[1:] is not None and sys.argv[1].isdigit():
+        runs = int(sys.argv[1])
+    ccTestMany(runs=runs, ai=False)
+    # test()
     

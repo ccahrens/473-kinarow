@@ -211,37 +211,73 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
         self.eval_calls += 1
         # Values should be higher when the states are better for X,
         # lower when better for O.
-        nRows: int = len(state.board)
-        mCols: int = len(state.board[0])
-        return self.staticEvalHelper(state, "X", nRows, mCols) + self.staticEvalHelper(state, "O", nRows, mCols)
-        return 0
+        n: int = len(state.board)
+        m: int = len(state.board[0])
+        k: int = GAME_TYPE.k
+        return (int)(self.who_i_play == "X")*self.staticEvalHelper(state, n, m, k) 
 
 
-    # dumb helper that for now just counts number of positions for each
-    def staticEvalHelper(self, state, agent, nRows, mCols):
-        sum: int = 0
-        for i in range (0, nRows):
-            prevWasOpponent = False
-            for j in range (0, mCols):
-                (sum_add, prevWasOpponent_new) = self.loopHelper(state.board[i][j], agent, prevWasOpponent, j, i)
-                sum += sum_add
-                prevWasOpponent = prevWasOpponent_new
+    def staticEvalHelper(self, state, n: int, m: int, k: int):
+        score: int = 0
+        ourStreak: int = 0
+        opponentStreak: int = 0
 
-        for j in range(0, mCols):
-            prevWasOpponent = False
-            for i in range (0, nRows):
-                (sum_add, prevWasOpponent_new) = self.loopHelper(state.board[i][j], agent, prevWasOpponent, i, j)
-                sum += sum_add
-                prevWasOpponent = prevWasOpponent_new
-        if (agent == "O"): return -sum
-        return sum
+        # look at columns
+        for i in range (0, n):
+            for j in range (0, m):
+                score, ourStreak, opponentStream = self.evaluateSquare(
+                    state.board[i][j], score, ourStreak, opponentStreak, k
+                    )
+                if score == abs(1000*k):
+                    return score
 
-    def loopHelper(self, check, agent, prevWasOpponent, i, j):
-        if check == agent:
-            return (1, False)
-        if not prevWasOpponent:
-            return (i, True)
-        return (i + j, True)
+        
+        # look at rows
+        for j in range(0, m):
+            ourStreak = 0
+            opponentStreak = 0
+            for i in range (0, n):
+                score, ourStreak, opponentStream = self.evaluateSquare(
+                    state.board[i][j], score, ourStreak, opponentStreak, k
+                    )
+                if score == abs(1000*k):
+                    return score
+        # look at diagonals
+        import numpy as np
+        a = min(n, m)
+        np_board = np.array(state.board)
+        diagonals = [np_board[::-1,:].diagonal(i) for i in range(-1*(a - 1),a)]
+        diagonals.extend(np_board.diagonal(i) for i in range(a - 1,-1*a,-1))
+        for i in range(len(diagonals)):
+            if (not isinstance(diagonals[i], str) and diagonals[i].size >= k) or k == 1:
+                ourStreak = 0
+                opponentStreak = 0
+                prevWasOpponent = False
+                for j in range(len(diagonals[i])):
+                    score, ourStreak, opponentStream = self.evaluateSquare(
+                        diagonals[i][j], score, ourStreak, opponentStreak, k
+                        )
+                    if score == abs(1000*k):
+                        return score
+
+        return score
+
+    def evaluateSquare(self, square, score, ourStreak, opponentStreak, k):
+        if self.who_i_play == square:
+            ourStreak += 1
+            score += 1
+            opponentStreak = 0
+        else:
+            score -= max(ourStreak, 1)
+            ourStreak = 0
+            if square == self.other(self.who_i_play):
+                opponentStreak += 1
+        if ourStreak == k:
+            return (1000*k, ourStreak, opponentStreak)
+        if opponentStreak == k:
+            return (-1000*k, ourStreak, opponentStreak)
+        
+        return (score, ourStreak, opponentStreak)
 
     
     def nextUtterance(self, currentState, currentRemark):
