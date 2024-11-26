@@ -187,7 +187,7 @@ def test():
 
     import ccahrens_KInARow as h
     #import ccahrens_KInARow as m
-    import tony_KInARow as m
+    import tonyji_KInARow as m
     #import RandomPlayer as m
     px = h.OurAgent()
     # po = h.OurAgent(twin=True)
@@ -196,8 +196,8 @@ def test():
     print("Players are set.")
     print("Now let's run the game.")
     runGame()
-    print("X accesses: ", px.eval_calls)
-    print("O accesses: ", po.eval_calls)
+    #print("X accesses: ", px.eval_calls)
+    #print("O accesses: ", po.eval_calls)
 
 def ccTestMany(runs=10, ai=False):
     # Stand-alone test
