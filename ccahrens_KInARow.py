@@ -77,6 +77,7 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
         GAME_TYPE = game_type
         if self.twin: self.utt_count = 5 # Offset the twin's utterances.
         self.zobrist = self.build_table(game_type.n, game_type.m)
+        self.first_turn = True
 
         if self.twin:
             print("Ah! A game of " + game_type.long_name + ". I'm intrigued!")
@@ -214,31 +215,41 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
         n: int = len(state.board)
         m: int = len(state.board[0])
         k: int = GAME_TYPE.k
-        return (int)(self.who_i_play == "X")*self.staticEvalHelper(state, n, m, k) 
-
+        return (int)(self.who_i_play == "X")*self.staticEvalHelper(state, n, m, k)
 
     def staticEvalHelper(self, state, n: int, m: int, k: int):
         score: int = 0
         ourStreak: int = 0
         opponentStreak: int = 0
+        wasFirstTurn = self.first_turn
+        maxStreak: int = 0
+
+        # calculate approximate middle
+        import math
+        (midN, midM) = (int(n/2), int(m/2))
+        print(midN)
+        print(midM)
+        print(state.board[midN][midM])
+        if wasFirstTurn and state.board[midN][midM] == self.who_i_play:
+            print("yup")
+            self.first_turn = False
+            return 10000*k
 
         # look at columns
         for i in range (0, n):
             for j in range (0, m):
-                score, ourStreak, opponentStream = self.evaluateSquare(
-                    state.board[i][j], score, ourStreak, opponentStreak, k
+                score, ourStreak, maxStreak, opponentStream = self.evaluateSquare(
+                    state.board[i][j], score, ourStreak, maxStreak, opponentStreak, k
                     )
                 if score == abs(1000*k):
                     return score
-
-        
         # look at rows
         for j in range(0, m):
             ourStreak = 0
             opponentStreak = 0
             for i in range (0, n):
-                score, ourStreak, opponentStream = self.evaluateSquare(
-                    state.board[i][j], score, ourStreak, opponentStreak, k
+                score, ourStreak, maxStreak, opponentStream = self.evaluateSquare(
+                    state.board[i][j], score, ourStreak, maxStreak, opponentStreak, k
                     )
                 if score == abs(1000*k):
                     return score
@@ -254,30 +265,32 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
                 opponentStreak = 0
                 prevWasOpponent = False
                 for j in range(len(diagonals[i])):
-                    score, ourStreak, opponentStream = self.evaluateSquare(
-                        diagonals[i][j], score, ourStreak, opponentStreak, k
+                    score, ourStreak, maxStreak, opponentStream = self.evaluateSquare(
+                        diagonals[i][j], score, ourStreak, maxStreak, opponentStreak, k
                         )
                     if score == abs(1000*k):
                         return score
 
-        return score
+        return score*maxStreak
 
-    def evaluateSquare(self, square, score, ourStreak, opponentStreak, k):
+    def evaluateSquare(self, square, score, ourStreak, maxStreak, opponentStreak, k):
         if self.who_i_play == square:
             ourStreak += 1
-            score += 1
+            if (ourStreak > maxStreak): maxStreak = ourStreak
+            score += ourStreak
             opponentStreak = 0
         else:
-            score -= max(ourStreak, 1)
+            # score -= max(ourStreak, 1)
+            score -= max(ourStreak, opponentStreak, 1)
             ourStreak = 0
             if square == self.other(self.who_i_play):
                 opponentStreak += 1
         if ourStreak == k:
-            return (1000*k, ourStreak, opponentStreak)
+            return (1000*k, ourStreak, maxStreak, opponentStreak)
         if opponentStreak == k:
-            return (-1000*k, ourStreak, opponentStreak)
+            return (-1000*k, ourStreak, maxStreak, opponentStreak)
         
-        return (score, ourStreak, opponentStreak)
+        return (score, ourStreak, maxStreak, opponentStreak)
 
     
     def nextUtterance(self, currentState, currentRemark):

@@ -37,3 +37,34 @@ our win rate (counts ties as losses): 90.95
 
 ***STATIC EVAL ACCESSES***
 static eval accesses: 35265
+
+
+
+
+win rates as of Monday, November 25, 2024 (2000 runs per game)
+***TTT RESULTS***
+opponent wins: 713
+our wins: 1195
+our win rate (excludes ties from total): 62.63102725366876
+our win rate (counts ties as losses): 59.75
+
+***FIAR RESULTS***
+opponent wins: 144
+our wins: 1852
+our win rate (excludes ties from total): 92.78557114228457
+our win rate (counts ties as losses): 92.6
+
+***CASSINI RESULTS***
+opponent wins: 138
+our wins: 1831
+our win rate (excludes ties from total): 92.99136617572371
+our win rate (counts ties as losses): 91.55
+
+***STATIC EVAL ACCESSES***
+static eval accesses: 34919
+static evals ttt x: 3510
+static evals ttt o: 3240
+static evals fiar x: 6726
+static evals fiar o: 7378
+static evals cassini x: 6832
+static evals cassini o: 7233
