@@ -213,7 +213,7 @@ def ccTestMany(runs=10, ai=False):
     opponent_wins_ttt = 0
     we_win_ttt = 0
     import ccahrens_KInARow as h
-    import RandomPlayer as m
+    import tonyji_KInARow as m
 
     static_eval_accesses = 0
     ttt_evals_x = 0
@@ -516,13 +516,15 @@ import sys
 if __name__ == '__main__':
     runs: int = 10
     ai: bool = False
-    if sys.argv[1:] is not None and sys.argv[1].isdigit():
-        runs = int(sys.argv[1])
-    if sys.argv[2] is not None:
-        if sys.argv[2].lower() == "false":
-            ai = False
-        elif sys.argv[2].lower() == "true":
-            ai = True
+    if len(sys.argv) > 1:
+        if sys.argv[1:] is not None and sys.argv[1].isdigit():
+            runs = int(sys.argv[1])
+    if len(sys.argv) > 2:
+        if sys.argv[2] is not None:
+            if sys.argv[2].lower() == "false":
+                ai = False
+            elif sys.argv[2].lower() == "true":
+                ai = True
     ccTestMany(runs=runs, ai=ai)
     # test()
     
