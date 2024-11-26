@@ -187,7 +187,7 @@ def test():
 
     import ccahrens_KInARow as h
     #import ccahrens_KInARow as m
-    import tonyji_KInARow as m
+    import tony_KInARow as m
     #import RandomPlayer as m
     px = h.OurAgent()
     # po = h.OurAgent(twin=True)
@@ -196,8 +196,8 @@ def test():
     print("Players are set.")
     print("Now let's run the game.")
     runGame()
-    #print("X accesses: ", px.eval_calls)
-    #print("O accesses: ", po.eval_calls)
+    print("X accesses: ", px.eval_calls)
+    print("O accesses: ", po.eval_calls)
 
 def ccTestMany(runs=10, ai=False):
     # Stand-alone test
@@ -337,7 +337,7 @@ def showResults(game: str, opponent_wins: int, our_wins: int, runs: int):
     print(f"our win rate (excludes ties from total): {100*our_wins/(opponent_wins + our_wins)}")
     print(f"our win rate (counts ties as losses): {100*our_wins/runs}")
 
-def cinTestMany():
+def cinTestMany(runs=10, ai=False):
     # Stand-alone test
     print("Starting stand-alone test of GameMaster.py")
     # Edit this to change what version of K-in-a-Row is used.
@@ -353,13 +353,13 @@ def cinTestMany():
     static_eval_accesses = 0
     import ccahrens_KInARow as h
     import RandomPlayer as m
-    num_matched = 10
+    num_matched = runs
 
     # run games with our agent as x
     print("Starting TTT X games...")
     for i in range (0, num_matched):
         print(f"...running game {i + 1}")
-        px = h.OurAgent()
+        px = h.OurAgent(ai=ai)
         po = m.OurAgent()
         set_players(px, po)
         res = runGame()
@@ -373,7 +373,7 @@ def cinTestMany():
     print("Starting TTT O games...")
     for i in range (0, num_matched):
         print(f"...running game {i + 1}")
-        po = h.OurAgent()
+        po = h.OurAgent(ai=ai)
         px = m.OurAgent()
         set_players(px, po)
         res = runGame()
@@ -392,7 +392,7 @@ def cinTestMany():
     print("Starting FIAR X games...")
     for i in range (0, num_matched):
         print(f"...running game {i + 1}")
-        px = h.OurAgent()
+        px = h.OurAgent(ai=ai)
         po = m.OurAgent()
         set_players(px, po)
         res = runGame()
@@ -425,7 +425,7 @@ def cinTestMany():
     print("Starting CASSINI X games...")
     for i in range (0, num_matched):
         print(f"...running game {i + 1}")
-        px = h.OurAgent()
+        px = h.OurAgent(ai=ai)
         po = m.OurAgent()
         set_players(px, po)
         res = runGame()
@@ -439,7 +439,7 @@ def cinTestMany():
     print("Starting CASSINI O games...")
     for i in range (0, num_matched):
         print(f"...running game {i + 1}")
-        po = h.OurAgent()
+        po = h.OurAgent(ai=ai)
         px = m.OurAgent()
         set_players(px, po)
         res = runGame()
@@ -452,6 +452,9 @@ def cinTestMany():
     
 
     # display results
+    showResults("TTT", opponent_wins_ttt, we_win_ttt, num_matched*2)
+    showResults("FIAR", opponent_wins_fiar, we_win_fiar, num_matched*2)
+    showResults("CASSINI", opponent_wins_cassini, we_win_cassini, num_matched*2)
     print()
     print("***TTT RESULTS***")
     print(f"opponent wins: {opponent_wins_ttt}")
@@ -509,7 +512,17 @@ def testDialogue(game=FIAR, ai=True):
     print("X accesses: ", px.eval_calls)
     print("O accesses: ", po.eval_calls)
 
+import sys
 if __name__ == '__main__':
-    #ccTestMany(runs=1, ai=False)
-    test()
+    runs: int = 10
+    ai: bool = False
+    if sys.argv[1:] is not None and sys.argv[1].isdigit():
+        runs = int(sys.argv[1])
+    if sys.argv[2] is not None:
+        if sys.argv[2].lower() == "false":
+            ai = False
+        elif sys.argv[2].lower() == "true":
+            ai = True
+    ccTestMany(runs=runs, ai=ai)
+    # test()
     
