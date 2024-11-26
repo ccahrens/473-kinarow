@@ -140,9 +140,7 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
 
         return ret_val
 
-    # TODO: @cinahrens
-    # 0's are mins, X's are maxes!
-    # The main adversarial search function:
+    # Perform alpha beta pruning with minimax and zobrist hashing.
     def minimax(self,
             state,
             depthRemaining,
@@ -160,7 +158,10 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
                 next_state = self.do_move(state, move[0], move[1], self.other(state.whose_move))
             else:
                 next_state = None
+            self.cache(self.hash(next_state), depthRemaining, value, move)
             return value, move, next_state
+
+        # Try placing a center move if possible.
         wasFirstTurn = self.first_turn
         import math
         n: int = len(state.board)
@@ -169,7 +170,8 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
         if wasFirstTurn and state.board[midN][midM] == ' ':
             self.first_turn = False
             next_state = self.do_move(state, midN, midM, self.other(state.whose_move))
-            return 10000*n, (midN, midN), next_state
+            self.cache(self.hash(next_state), depthRemaining, 10000*n, (midN, midM))
+            return 10000*n, (midN, midM), next_state
         if wasFirstTurn and state.board[midN][midM] != ' ':
             self.first_turn = False
     
@@ -187,6 +189,7 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
         if x:
             v = -1 * v
 
+        # Minimax some more, then return and cache.
         for i in range(length):
             successor = states[i]
             action = moves[i]
@@ -220,9 +223,8 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
         for row in range(rows):
             for col in range(cols):
                 option = state.board[row][col]
-                #if option is not "-":
                 if option != "-":
-                    hash ^= self.zobrist[(row, col, option)]  # XOR for each board cell
+                    hash ^= self.zobrist[(row, col, option)]
         return hash
     
     def rehash(self, player, hash, row, column):
@@ -251,20 +253,6 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
         opponentStreak: int = 0
         wasFirstTurn = self.first_turn
         maxStreak: int = 0
-
-        # calculate approximate middle
-        import math
-        (midN, midM) = (int(n/2), int(m/2))
-        # print(midN)
-        # print(midM)
-        # print(state.board[midN][midM])
-
-        # if we're contemplating our first turn, we want to try to play
-        # the middle square if at all possible!
-        if wasFirstTurn and state.board[midN][midM] == self.who_i_play:
-            print("yup")
-            self.first_turn = False
-            return 10000*k
 
         # investigate our status in columns
         for i in range (0, n):
@@ -443,11 +431,3 @@ BIRDY_BANK = ["The baddest Birdy in the game!",
                   "If I don't think, therefore I aren't? What?",
                   "I'm so confused",
                   "Should I become a philosofeather? Darn, it's my turn again, isn't it?"]
-# OPTIONAL THINGS TO KEEP TRACK OF:
-
-#  WHO_MY_OPPONENT_PLAYS = other(WHO_I_PLAY)
-#  MY_PAST_UTTERANCES = []
-#  OPPONENT_PAST_UTTERANCES = []
-#  UTTERANCE_COUNT = 0
-#  REPEAT_COUNT = 0 or a table of these if you are reusing different utterances
-

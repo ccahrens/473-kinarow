@@ -179,7 +179,7 @@ def test():
     # Stand-alone test
     print("Starting stand-alone test of GameMaster.py")
     # Edit this to change what version of K-in-a-Row is used.
-    set_game(TTT) # default is Tic-Tac-Toe
+    set_game(Cassini) # default is Tic-Tac-Toe
     #set_game(FIAR) # Five in a Row
     # Import 1 or 2 agent files here.
     # If using only 1, create 2 instances of it, one of
@@ -189,10 +189,10 @@ def test():
     #import ccahrens_KInARow as m
     import tonyji_KInARow as m
     #import RandomPlayer as m
-    px = h.OurAgent(ai=False)
+    px = h.OurAgent(ai=True)
     # po = h.OurAgent(twin=True)
     po = m.OurAgent()
-    set_players(px, po)
+    set_players(po, px)
     print("Players are set.")
     print("Now let's run the game.")
     runGame()
@@ -512,4 +512,5 @@ if __name__ == '__main__':
             elif sys.argv[2].lower() == "true":
                 ai = True
     ccTestMany(runs=runs, ai=ai)
+    #test()
     
