@@ -111,18 +111,34 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
    
     # The core of your agent's ability should be implemented here:             
     def makeMove(self, currentState, currentRemark, timeLimit=10000):
+        import time
         depth_limit = 5
-        hash = self.hash(currentState)
-        _, newMove, newState = self.minimax(currentState, depth_limit, alpha=float("-inf"), beta=float("inf"), pruning=True, zHashing=hash, x = self.who_i_play == 'X')
+        ret_val = []
+        while timeLimit > 0:
+            start = time.time()
+            depth_limit = 5
+            hash = self.hash(currentState)
+            value, newMove, newState = self.minimax(currentState, depth_limit, alpha=float("-inf"), beta=float("inf"), pruning=True, zHashing=hash, x = self.who_i_play == 'X')
 
-        other = self.other(currentState.whose_move)
-        n_hash = self.rehash(self.who_i_play, hash, newMove[0], newMove[1])
+            other = self.other(currentState.whose_move)
+            n_hash = self.rehash(self.who_i_play, hash, newMove[0], newMove[1])
 
-        if n_hash not in self.hashings:
-            self.hashings[n_hash] = (None, None)
+            if n_hash not in self.hashings:
+                self.hashings[n_hash] = (None, None)
 
-        myUtterance = self.nextUtterance(currentState, currentRemark)
-        return [[newMove, newState], myUtterance]
+            myUtterance = self.nextUtterance(currentState, currentRemark)
+            ret_val = [[newMove, newState], myUtterance]
+            if value > 10000:
+                return ret_val
+            end = time.time()
+            duration = end - start
+            timeLimit -= duration
+            if timeLimit >= duration * 1.5:
+                depth_limit += 1
+            else:
+                timeLimit = 0
+
+        return ret_val
 
     # TODO: @cinahrens
     # 0's are mins, X's are maxes!
@@ -145,10 +161,21 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
             else:
                 next_state = None
             return value, move, next_state
+        wasFirstTurn = self.first_turn
+        import math
+        n: int = len(state.board)
+        m: int = len(state.board[0])
+        (midN, midM) = (int(n/2), int(m/2))
+        if wasFirstTurn and state.board[midN][midM] == ' ':
+            self.first_turn = False
+            next_state = self.do_move(state, midN, midM, self.other(state.whose_move))
+            return 10000*n, (midN, midN), next_state
+        if wasFirstTurn and state.board[midN][midM] != ' ':
+            self.first_turn = False
     
         states, moves = self.successors_and_moves(state)
     
-        if(depthRemaining == 0 or state.finished or not states):
+        if(not states or depthRemaining == 0 or state.finished):
             value = self.staticEval(state)
             self.cache(zHashing, depthRemaining, value, None)
             return value, None, None
@@ -228,9 +255,9 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
         # calculate approximate middle
         import math
         (midN, midM) = (int(n/2), int(m/2))
-        print(midN)
-        print(midM)
-        print(state.board[midN][midM])
+        # print(midN)
+        # print(midM)
+        # print(state.board[midN][midM])
 
         # if we're contemplating our first turn, we want to try to play
         # the middle square if at all possible!
