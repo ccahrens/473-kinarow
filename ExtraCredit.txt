@@ -1,0 +1,12 @@
+Describe each extra credit option you implemented, with a separate subheading and subsection for each one.
+
+Part I
+Zobrist Hashing
+Zobrist hashing caches previously seen states and their associated static evaluation values. It starts by storing a random 64 bit integer for each possible board position and player. As new states are added, they are stored by XORing all the associated game board positions. In our case, we store the static evaluation function and the depth of the exploration at the same time. When we implemented Zobrist hashing, we noticed a dramatic decrease in static evaluation functions. We did not test it independently of when we implemented alpha-beta cutoffs, but you can view the improvement of before and after in the table above. It improved so significantly that we actually were able to watch the difference in match speed.
+
+Part II
+LLM Utterances
+To do this, we created a different prompt for each agent. We gave the Gemini API some examples of possible utterances that would be acceptable and described the persona of the agent. Then, at each turn, we gave Gemini the current game state and asked for a one-sentence line of commentary based on the persona, previous prompts, and what the opponent just said. For more information, please refer to the response to the question asking about developing dialogue capabilities.
+
+Tournament
+We would like to be entered into the tournament to compete for the top 50% of the class!
