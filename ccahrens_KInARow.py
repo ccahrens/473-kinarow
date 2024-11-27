@@ -336,12 +336,12 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
     # helper function to evaluate a particular square during statEvalHelper's run
     # takes a specific square on the board, our current streak, the max streak we've seen,
     # our opponent's streak currently, and how many in a row we need to win
-    # returns the updated score, ourStreak, maxStreak, and opponentStreak
+    # returns the updated score, ourStreak, and opponentStreak
     def evaluateSquare(self, square, score, ourStreak, maxStreak, opponentStreak, k):
         if self.who_i_play == square:
             ourStreak += 1
-            if (ourStreak > maxStreak): maxStreak = ourStreak
             score += ourStreak
+            score += opponentStreak * k
             opponentStreak = 0
         else:
             # score -= max(ourStreak, 1)
