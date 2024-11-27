@@ -4,6 +4,12 @@ import game_types
 from winTesterForK import winTesterForK
 import random
 import os
+try:
+    GLOBAL_AI = True
+    import google.generativeai as genai
+except:
+    GLOBAL_AI = False
+
 
 AUTHORS = 'CC Ahrens and Cin Ahrens' 
 
@@ -36,6 +42,8 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
         self.zobrist = []
         self.hashings = {}
         self.ai = ai
+        if (not GLOBAL_AI):
+            self.ai = False
         if (self.ai):
             try:
                 import google.generativeai as genai
