@@ -129,7 +129,6 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
         import time
         depth_limit = 5
         ret_val = []
-        print(len(ret_val))
         maximizing = self.who_i_play == 'X'
         if maximizing:
             curr_best = float("-inf")
@@ -152,7 +151,7 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
 
             myUtterance = self.nextUtterance(currentState, currentRemark)
             if len(ret_val) == 0:
-                ret_value = [[newMove, newState], myUtterance]
+                ret_val = [[newMove, newState], myUtterance]
             if maximizing:
                 if value > curr_best:
                     curr_best = value
@@ -163,7 +162,6 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
                     ret_value = [[newMove, newState], myUtterance]
             if value == GLOBAL_CENTER:
                 ret_value = [[newMove, newState], myUtterance]
-                print("other", ret_value)
                 return ret_val
             end = time.time()
             duration = end - start
@@ -172,7 +170,6 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
                 depth_limit += 1
             else:
                 timeLimit = 0
-        print("here", ret_val)
         return ret_val
 
     # Perform alpha beta pruning with minimax and zobrist hashing.
