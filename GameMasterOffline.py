@@ -193,7 +193,7 @@ def test():
     px = h.OurAgent(ai=True)
     # po = h.OurAgent(twin=True)
     po = m.OurAgent()
-    set_players(px, po)
+    set_players(po, px)
     print("Players are set.")
     print("Now let's run the game.")
     runGame()

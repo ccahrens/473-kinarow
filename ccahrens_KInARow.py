@@ -127,9 +127,14 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
         import time
         depth_limit = 5
         ret_val = []
+        maximizing = self.who_i_play == 'X'
+        if maximizing:
+            curr_best = float("-inf")
+        else:
+            curr_best = float("inf")
         if timeLimit is None:
-            timeLimit = 0.1
-        timeLimit = min(0.1, timeLimit)
+            timeLimit = 10
+        timeLimit = min(10, timeLimit)
         while timeLimit > 0:
             start = time.time()
             depth_limit = 5
@@ -143,7 +148,14 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
                 self.hashings[n_hash] = (None, None)
 
             myUtterance = self.nextUtterance(currentState, currentRemark)
-            ret_val = [[newMove, newState], myUtterance]
+            if maximizing:
+                if value > curr_best:
+                    curr_best = value
+                    ret_val = [[newMove, newState], myUtterance]
+            elif not maximizing:
+                if value < curr_best:
+                    curr_best = value
+                    ret_value = [[newMove, newState], myUtterance]
             if value > 10000:
                 return ret_val
             end = time.time()
