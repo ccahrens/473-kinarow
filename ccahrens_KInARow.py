@@ -36,7 +36,6 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
         self.playing = "don't know yet" # e.g., "X" or "O".
         self.my_past_utterances = []
         self.opponent_past_utterances = []
-        self.repeat_count = 0
         self.utt_count = 0
         self.eval_calls = 0
         self.zobrist = []
@@ -126,8 +125,8 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
         depth_limit = 5
         ret_val = []
         if timeLimit is None:
-            timeLimit = 30
-        timeLimit = min(30, timeLimit)
+            timeLimit = 0.1
+        timeLimit = min(0.1, timeLimit)
         while timeLimit > 0:
             start = time.time()
             depth_limit = 5
@@ -366,20 +365,16 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
                         ]
                     )
         if (self.twin):   
-            if self.repeat_count > 1: return "I am randomed out now."
             n = len(BIRDY_BANK)
             if self.utt_count == n:
                 self.utt_count = 0
-                self.repeat_count += 1
             this_utterance = BIRDY_BANK[self.utt_count]
             self.utt_count += 1
             return this_utterance
         else:
-            if self.repeat_count > 1: return "I am randomed out now."
             n = len(DUCKY_BANK)
             if self.utt_count == n:
                 self.utt_count = 0
-                self.repeat_count += 1
             this_utterance = DUCKY_BANK[self.utt_count]
             self.utt_count += 1
             return this_utterance
