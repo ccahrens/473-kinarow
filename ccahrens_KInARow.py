@@ -152,7 +152,8 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
 
             myUtterance = self.nextUtterance(currentState, currentRemark)
             if len(ret_val) == 0:
-                ret_value = [[newMove, newState], myUtterance]
+                ret_val = [[newMove, newState], myUtterance]
+                print("in len", ret_val)
             if maximizing:
                 if value > curr_best:
                     curr_best = value
