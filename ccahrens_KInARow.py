@@ -117,6 +117,9 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
         import time
         depth_limit = 5
         ret_val = []
+        if timeLimit is None:
+            timeLimit = 30
+        timeLimit = min(30, timeLimit)
         while timeLimit > 0:
             start = time.time()
             depth_limit = 5
@@ -151,6 +154,11 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
             alpha=None,
             beta=None,
             zHashing=None, x=True):
+        
+        if alpha is None:
+            alpha = float("-inf")
+        if beta is None:
+            beta = float("inf")
         
         if zHashing is None:
             zHashing = self.hash(state)
