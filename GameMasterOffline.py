@@ -188,11 +188,12 @@ def test():
     import ccahrens_KInARow as h
     #import ccahrens_KInARow as m
     import tonyji_KInARow as m
+    import apolo_KInARow as m
     #import RandomPlayer as m
     px = h.OurAgent(ai=True)
     # po = h.OurAgent(twin=True)
     po = m.OurAgent()
-    set_players(po, px)
+    set_players(px, po)
     print("Players are set.")
     print("Now let's run the game.")
     runGame()
@@ -511,6 +512,6 @@ if __name__ == '__main__':
                 ai = False
             elif sys.argv[2].lower() == "true":
                 ai = True
-    ccTestMany(runs=runs, ai=ai)
-    #test()
+    #ccTestMany(runs=runs, ai=ai)
+    test()
     
