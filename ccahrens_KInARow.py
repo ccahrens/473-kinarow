@@ -309,7 +309,7 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
                     if score == abs(1000*k):
                         return score
 
-        return score*maxStreak
+        return score
 
     # helper function to evaluate a particular square during statEvalHelper's run
     # takes a specific square on the board, our current streak, the max streak we've seen,
