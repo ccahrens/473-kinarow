@@ -129,6 +129,7 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
         import time
         depth_limit = 5
         ret_val = []
+        print(len(ret_val))
         maximizing = self.who_i_play == 'X'
         if maximizing:
             curr_best = float("-inf")
@@ -150,6 +151,8 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
                 self.hashings[n_hash] = (None, None)
 
             myUtterance = self.nextUtterance(currentState, currentRemark)
+            if len(ret_val) == 0:
+                ret_value = [[newMove, newState], myUtterance]
             if maximizing:
                 if value > curr_best:
                     curr_best = value
@@ -158,7 +161,9 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
                 if value < curr_best:
                     curr_best = value
                     ret_value = [[newMove, newState], myUtterance]
-            if value > GLOBAL_CENTER:
+            if value == GLOBAL_CENTER:
+                ret_value = [[newMove, newState], myUtterance]
+                print("other", ret_value)
                 return ret_val
             end = time.time()
             duration = end - start
@@ -167,7 +172,7 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
                 depth_limit += 1
             else:
                 timeLimit = 0
-
+        print("here", ret_val)
         return ret_val
 
     # Perform alpha beta pruning with minimax and zobrist hashing.
@@ -206,7 +211,7 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
             self.first_turn = False
             next_state = self.do_move(state, midN, midM, self.other(state.whose_move))
             self.cache(self.hash(next_state), depthRemaining, 10000*n, (midN, midM))
-            return 10000*n, (midN, midM), next_state
+            return GLOBAL_CENTER, (midN, midM), next_state
         if wasFirstTurn and state.board[midN][midM] != ' ':
             self.first_turn = False
     
