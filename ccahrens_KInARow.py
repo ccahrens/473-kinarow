@@ -12,6 +12,8 @@ except:
 
 GLOBAL_BAD = -10000
 GLOBAL_GOOD = 1000
+GLOBAL_CENTER = 10000.1
+
 
 
 AUTHORS = 'CC Ahrens and Cin Ahrens' 
@@ -156,7 +158,7 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
                 if value < curr_best:
                     curr_best = value
                     ret_value = [[newMove, newState], myUtterance]
-            if value > 10000:
+            if value > GLOBAL_CENTER:
                 return ret_val
             end = time.time()
             duration = end - start
