@@ -350,7 +350,6 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
             return (GLOBAL_GOOD, ourStreak, maxStreak, opponentStreak)
         if opponentStreak == k:
             return (GLOBAL_BAD, ourStreak, maxStreak, opponentStreak)
-        
         return (score, ourStreak, maxStreak, opponentStreak)
 
     
