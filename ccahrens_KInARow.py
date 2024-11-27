@@ -278,7 +278,7 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
                 score, ourStreak, maxStreak, opponentStream = self.evaluateSquare(
                     state.board[i][j], score, ourStreak, maxStreak, opponentStreak, k
                     )
-                if score == abs(1000*k):
+                if score == abs(10000*k):
                     return score
         # investigate our status in rows
         for j in range(0, m):
@@ -288,7 +288,7 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
                 score, ourStreak, maxStreak, opponentStream = self.evaluateSquare(
                     state.board[i][j], score, ourStreak, maxStreak, opponentStreak, k
                     )
-                if score == abs(1000*k):
+                if score == abs(10000*k):
                     return score
         # look at diagonals
         import numpy as np
@@ -306,7 +306,7 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
                     score, ourStreak, maxStreak, opponentStream = self.evaluateSquare(
                         diagonals[i][j], score, ourStreak, maxStreak, opponentStreak, k
                         )
-                    if score == abs(1000*k):
+                    if score == abs(10000*k):
                         return score
 
         return score
@@ -328,9 +328,9 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
             if square == self.other(self.who_i_play):
                 opponentStreak += 1
         if ourStreak == k:
-            return (1000*k, ourStreak, maxStreak, opponentStreak)
+            return (10000*k, ourStreak, maxStreak, opponentStreak)
         if opponentStreak == k:
-            return (-1000*k, ourStreak, maxStreak, opponentStreak)
+            return (-10000*k, ourStreak, maxStreak, opponentStreak)
         
         return (score, ourStreak, maxStreak, opponentStreak)
 
