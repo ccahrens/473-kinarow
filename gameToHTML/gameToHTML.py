@@ -1,6 +1,8 @@
 # STARTER CODE FROM CSE 473 COURSE STAFF
 # This code was provided courtesy of the CSE 473 course staff
-# and converts a game to an HTML format
+# and converts a game to an HTML format.
+# It was modified by CC and Cin Ahrens to fit the particular
+# needs of this project.
 
 '''gameToHTML.py
 
@@ -47,10 +49,10 @@ def stateToHTML(state, finished=False):
     for row in board:
         html += "<tr>"
         for col in row:
-            img = "gray32.png"
-            if col=='X': img = "X32.png"
-            elif col=='O': img = "O32.png"
-            elif col=="-": img = "black32.png"
+            img = "ProjectImages/gray32.png"
+            if col=='X': img = "ProjectImages/X32.png"
+            elif col=='O': img = "ProjectImages/O32.png"
+            elif col=="-": img = "ProjectImages/black32.png"
             html += "<td><img src=" + img + "></td>"
         html += "</tr>\n"
     html += "</table><br>\n"

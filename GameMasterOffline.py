@@ -13,7 +13,9 @@
 
 from time import sleep
 USE_HTML = True
-if USE_HTML: import gameToHTML
+if USE_HTML:
+    import gameToHTML
+    from gameToHTML import gameToHTML
 
 from winTesterForK import winTesterForK
 
@@ -190,9 +192,13 @@ def test():
 
     import ahrens_KInARow as h
     #import ahrens_KInARow as m
-    import tonyji_KInARow as m
-    import apolo_KInARow as m
-    #import RandomPlayer as m
+    try:
+        import tonyji_KInARow as m
+    except:
+        try:
+            import apolo_KInARow as m
+        except:
+            import RandomPlayer as m
     px = h.OurAgent(ai=True)
     # po = h.OurAgent(twin=True)
     po = m.OurAgent()
