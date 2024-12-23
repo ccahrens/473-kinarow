@@ -1,3 +1,6 @@
+# Much of this code was provided courtesy of CSE 473 course staff.
+# Testing code was written by CC and Cin Ahrens.
+
 '''GameMasterOffline.py based on GameMaster.py
 
  Updated Nov. 17, 2024.
@@ -185,8 +188,8 @@ def test():
     # If using only 1, create 2 instances of it, one of
     # which is a "twin".
 
-    import ccahrens_KInARow as h
-    #import ccahrens_KInARow as m
+    import ahrens_KInARow as h
+    #import ahrens_KInARow as m
     import tonyji_KInARow as m
     import apolo_KInARow as m
     #import RandomPlayer as m
@@ -213,7 +216,7 @@ def ccTestMany(runs=10, ai=False):
     # set up to play tic tac toe
     opponent_wins_ttt = 0
     we_win_ttt = 0
-    import ccahrens_KInARow as h
+    import ahrens_KInARow as h
     try:
         import tonyji_KInARow as m
     except:
@@ -355,7 +358,7 @@ def cinTestMany(runs=10, ai=False):
     opponent_wins_ttt = 0
     we_win_ttt = 0
     static_eval_accesses = 0
-    import ccahrens_KInARow as h
+    import ahrens_KInARow as h
     import RandomPlayer as m
     num_matched = runs
 
@@ -487,7 +490,7 @@ def cinTestMany(runs=10, ai=False):
     # static eval accesses: 21277103
 
 def testDialogue(game=FIAR, ai=True):
-    import ccahrens_KInARow as h
+    import ahrens_KInARow as h
     print("Starting testDialogue()")
     set_game(game)
     px = h.OurAgent(ai=ai)

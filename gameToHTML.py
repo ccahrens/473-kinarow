@@ -1,3 +1,7 @@
+# STARTER CODE FROM CSE 473 COURSE STAFF
+# This code was provided courtesy of the CSE 473 course staff
+# and converts a game to an HTML format
+
 '''gameToHTML.py
 
 '''

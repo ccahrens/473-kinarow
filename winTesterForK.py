@@ -1,3 +1,5 @@
+# Provided courtesy of CSE 473 course staff
+
 '''winTesterForK.py
  This function takes a state s (with components s.board and s.whoseMove),
  a move of the form [i, j], and a parameter k.

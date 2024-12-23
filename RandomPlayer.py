@@ -1,3 +1,5 @@
+# Provided courtesy of CSE 473 course staff
+
 ''' RandomPlayer.py
 A player for the game of K-in-a-Row (on N by M board with forbidden squares.)
 

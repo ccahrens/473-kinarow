@@ -1,3 +1,5 @@
+# Courtesy of CSE 473 course staff
+
 '''game_types.py
 
 Defines a State class useful in all K-in-a-Row games.
