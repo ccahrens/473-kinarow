@@ -51,7 +51,7 @@ class OurAgent(KAgent):  # Keep the class name "OurAgent" so a game master
         if (self.ai):
             try:
                 import google.generativeai as genai
-                genai.configure(api_key="AIzaSyDWhKiqG2rO8vZhW7cCD8LluN4Q_Of8pck")
+                genai.configure(api_key="YOUR API KEY HERE")
                 self.model = genai.GenerativeModel("gemini-1.5-flash")
             except:
                 self.ai = False
